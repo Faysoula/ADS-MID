@@ -6,4 +6,5 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(ADS_midterm_project main.cpp
         ForestTree.cpp
         ForestTree.h
-        Account.h)
+        Account.h
+)
