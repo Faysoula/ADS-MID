@@ -1,0 +1,8 @@
+//
+// Created by User on 11/19/2024.
+//
+
+#ifndef ADS_MIDTERM_PROJECT_TREENODE_H
+#define ADS_MIDTERM_PROJECT_TREENODE_H
+
+#endif //ADS_MIDTERM_PROJECT_TREENODE_H
