@@ -1,4 +1,4 @@
-"D:\JetBrains\Clion 2024.2.3\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" C:\Users\asus\CLionProjects\ADS-MID
+"C:\Program Files\JetBrains\CLion 2024.1.1\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" -S C:\Users\MayaH\CLionProjects\ADS-MID2 -B C:\Users\MayaH\CLionProjects\ADS-MID2\cmake-build-debug
 CMake Deprecation Warning:
   Support for "Extra Generators" like
 
@@ -8,6 +8,6 @@ CMake Deprecation Warning:
   use the cmake-file-api(7) to view CMake-generated project build trees.
 
 
--- Configuring done (9.3s)
--- Generating done (0.7s)
--- Build files have been written to: C:/Users/asus/CLionProjects/ADS-MID/cmake-build-debug
+-- Configuring done (0.3s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/Users/MayaH/CLionProjects/ADS-MID2/cmake-build-debug

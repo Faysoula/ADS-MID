@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "C:/Users/asus/CLionProjects/ADS-MID/ForestTree.cpp" "CMakeFiles/ADS_midterm_project.dir/ForestTree.cpp.obj" "gcc" "CMakeFiles/ADS_midterm_project.dir/ForestTree.cpp.obj.d"
-  "C:/Users/asus/CLionProjects/ADS-MID/main.cpp" "CMakeFiles/ADS_midterm_project.dir/main.cpp.obj" "gcc" "CMakeFiles/ADS_midterm_project.dir/main.cpp.obj.d"
+  "C:/Users/MayaH/CLionProjects/ADS-MID2/ForestTree.cpp" "CMakeFiles/ADS_midterm_project.dir/ForestTree.cpp.obj" "gcc" "CMakeFiles/ADS_midterm_project.dir/ForestTree.cpp.obj.d"
+  "C:/Users/MayaH/CLionProjects/ADS-MID2/main.cpp" "CMakeFiles/ADS_midterm_project.dir/main.cpp.obj" "gcc" "CMakeFiles/ADS_midterm_project.dir/main.cpp.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
