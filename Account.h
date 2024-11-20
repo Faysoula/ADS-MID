@@ -26,15 +26,18 @@ public:
     ~Account();  // Destructor
 
     // Getters
-    int getAccountNumber() const { return accountNumber; }
-    string getDescription() const { return description; }
-    double getBalance() const { return balance; }
-    const vector<Transaction>& getTransactions() const { return transactions; }
+    int getAccountNumber() const;
+    string getDescription() const;
+    double getBalance() const;
+    const vector<Transaction>& getTransactions() const;
+    //int getTransactionCount() const;
+    //Transaction getTransaction(int index) const;
 
     // Setters
-    void setAccountNumber(int num) { accountNumber = num; }
-    void setDescription(const string& desc) { description = desc; }
-    void setBalance(double bal) { balance = bal; }
+    void setAccountNumber(int num);
+    void setDescription(const string& desc);
+    void setBalance(double bal);
+    void setTransaction(int index, const Transaction& t);
 
     // Operations
     void addTransaction(const Transaction& t);
