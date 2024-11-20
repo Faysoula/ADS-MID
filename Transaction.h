@@ -38,9 +38,6 @@ public:
     void setDate(const string& dateStr);
     void setDescription(const string& desc);
 
-    // Operator Overloads
-    friend ostream& operator<<(ostream& os, const Transaction& transaction);
-    friend istream& operator>>(istream& is, Transaction& transaction);
 
     // Validation
     bool isValid() const;
@@ -49,7 +46,12 @@ public:
     // Static Functions
     static bool compareByDate(const Transaction& t1, const Transaction& t2);
     static bool compareByAmount(const Transaction& t1, const Transaction& t2);
+
 };
+
+    //  ostream and istream operators
+    ostream& operator<<(ostream& os, const Transaction& transaction);
+    istream& operator>>(istream& is, Transaction& transaction);
 
 #endif //ADS_MIDTERM_PROJECT_TRANSACTION_H
 
