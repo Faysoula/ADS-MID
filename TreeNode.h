@@ -8,10 +8,12 @@
 #include <iostream>
 #include <string>
 #include "Account.h"
+
 using namespace std;
 
-typedef Account* AccountPtr;
-typedef class TreeNode* NodePtr;
+typedef Account *AccountPtr;
+typedef class TreeNode *NodePtr;
+
 //didnt use elemtntypr account cause its confusing for no reason
 class TreeNode {
 private:
@@ -22,30 +24,35 @@ private:
 public:
     //constructors
     TreeNode(); //aadeye
-    TreeNode(const Account& acc); //with acc
-    TreeNode(const TreeNode& other); // copy
+    TreeNode(const Account &acc); //with acc
+    TreeNode(const TreeNode &other); // copy
 
     ~TreeNode();
 
     //all the gets
     Account getData() const;
+
     NodePtr getLeftChild() const;
+
     NodePtr getRightSibling() const;
 
     //setters
-    void setData(const Account& acc);
+    void setData(const Account &acc);
+
     void setLeftChild(NodePtr left);
+
     void setRightSibling(NodePtr right);
 
     //node stuffies
     bool isLeaf() const;
+
     bool hasSibling() const;
 
-    TreeNode& operator=(const TreeNode&);
+    TreeNode &operator=(const TreeNode &);
 
-    void addchild(const Account&);
+    void addchild(const Account &);
 
-    void addSibling(const Account&);
+    void addSibling(const Account &);
 
     void updateBalance(double);//propagates up
 
@@ -56,9 +63,13 @@ public:
     void print() const;
 
 private:
-    void copyForm(const TreeNode& other);
+    void copyForm(const TreeNode &other);
+
     void clean();
+
     bool checkParent(int parentNum, int childNum) const;
+
+    int getLevelHelper(NodePtr node, int currentLevel) const;
 
 };
 
