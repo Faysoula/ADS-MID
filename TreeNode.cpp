@@ -115,7 +115,7 @@ void TreeNode::addSibling(const Account &acc) {
 
 void TreeNode::updateBalance(const Transaction &t) {
     if (account == nullptr) {
-        throw std::runtime_error("Null account pointer");
+        throw std::runtime_error("Null account pointer ");
     }
     account->updateBalance(t);
 }
