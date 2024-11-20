@@ -48,7 +48,7 @@ Transaction Account::getTransaction(int index) const {
     if(index>=0 && index < transactions.size()) {
         return transactions[index];
     }
-    throw out_of_range("Transaction index out of range :)")
+    throw out_of_range("Transaction index out of range :)");
 }
 
 void Account::setAccountNumber(int num) {
