@@ -30,8 +30,8 @@ public:
     string getDescription() const;
     double getBalance() const;
     const vector<Transaction>& getTransactions() const;
-    //int getTransactionCount() const;
-    //Transaction getTransaction(int index) const;
+    int getTransactionCount() const;
+    Transaction getTransaction(int index) const;
 
     // Setters
     void setAccountNumber(int num);
@@ -46,10 +46,10 @@ public:
     string getShortDescription() const;
     bool isParentOf(int otherAccountNum) const;
 
-    // Operators
-    ostream& operator<<(istream& os, const Account& account);
-    istream& operator>>(istream& is, Account& account);
 };
 
+// Operators
+ostream& operator<<(ostream& os, const Account& account);
+istream& operator>>(istream& is, Account& account);
 
 #endif //ACCOUNT_H
