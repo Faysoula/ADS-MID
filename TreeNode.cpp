@@ -113,8 +113,11 @@ void TreeNode::addSibling(const Account &acc) {
     }
 }
 
-void TreeNode::updateBalance(double ammount) {
-    account->updateBalance(ammount);// maya this is the function you need to implement first
+void TreeNode::updateBalance(const Transaction &t) {
+    if (account == nullptr) {
+        throw std::runtime_error("Null account pointer");
+    }
+    account->updateBalance(t);
 }
 
 bool TreeNode::checkParent(int parentNum, int childNum) const {

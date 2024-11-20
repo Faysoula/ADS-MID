@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include "Account.h"
+#include "Transaction.h"
 
 using namespace std;
 
@@ -54,7 +55,7 @@ public:
 
     void addSibling(const Account &);
 
-    void updateBalance(double);//propagates up
+    void updateBalance(const Transaction &t);
 
     bool isParent(int accNum) const;
 
