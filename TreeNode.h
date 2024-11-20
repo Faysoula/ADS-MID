@@ -10,11 +10,14 @@
 #include "Account.h"
 using namespace std;
 
+typedef Account* AccountPtr;
+typedef class TreeNode* NodePtr;
+//didnt use elemtntypr account cause its confusing for no reason
 class TreeNode {
 private:
-    Account* account;
-    TreeNode* leftChild;
-    TreeNode* rightSibling;
+    AccountPtr account;
+    NodePtr leftChild;
+    NodePtr rightSibling;
 
 public:
     //constructors
@@ -26,13 +29,13 @@ public:
 
     //all the gets
     Account getData() const;
-    TreeNode* getLeftChild() const;
-    TreeNode* getRightSibling() const;
+    NodePtr getLeftChild() const;
+    NodePtr getRightSibling() const;
 
     //setters
     void setData(const Account& acc);
-    void setLeftChild(TreeNode* left);
-    void setRightSibling(TreeNode* right);
+    void setLeftChild(NodePtr left);
+    void setRightSibling(NodePtr right);
 
     //node stuffies
     bool isLeaf() const;
@@ -40,15 +43,15 @@ public:
 
     TreeNode& operator=(const TreeNode&);
 
-    void addchild(TreeNode*);
+    void addchild(const Account&);
 
-    void addSibling(TreeNode*);
+    void addSibling(const Account&);
 
     void updateBalance(double);//propagates up
 
     bool isParent(int accNum) const;
 
-    int getLevel(TreeNode*) const;
+    int getLevel(NodePtr) const;
 
     void print() const;
 
