@@ -78,7 +78,6 @@ void Account::setTransaction(int index, const Transaction &t) {
     }
 }
 
-
 void Account::addTransaction(const Transaction &t) {
     transactions.push_back(t);
     updateBalance(t);
@@ -115,8 +114,7 @@ bool Account::isParentOf(int otherAccountNum) const {
         childNum.substr(0, parentNum.length()) == parentNum;
 }
 
-
-ostream& operator<<(ostream& os, const Account& account) {
+ostream &operator<<(ostream &os, const Account &account) {
     os << account.getAccountNumber() << " "
        << account.getShortDescription() << " "
        << fixed << std::setprecision(2) << account.getBalance();

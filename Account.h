@@ -46,10 +46,10 @@ public:
     string getShortDescription() const;
     bool isParentOf(int otherAccountNum) const;
 
-    // Operators
-    ostream& operator<<(istream& os, const Account& account);
-    istream& operator>>(istream& is, Account& account);
 };
 
+// Operators
+ostream& operator<<(ostream& os, const Account& account);
+istream& operator>>(istream& is, Account& account);
 
 #endif //ACCOUNT_H
