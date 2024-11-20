@@ -74,7 +74,7 @@ void Account::setTransaction(int index, const Transaction &t) {
         transactions[index]=t;
         updateBalance(t);
     } else {
-        throw out_of_range("Transaction out of range :)")
+        throw out_of_range("Transaction out of range :)");
     }
 }
 
