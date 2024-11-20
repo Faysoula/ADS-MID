@@ -30,8 +30,8 @@ public:
     string getDescription() const;
     double getBalance() const;
     const vector<Transaction>& getTransactions() const;
-    //int getTransactionCount() const;
-    //Transaction getTransaction(int index) const;
+    int getTransactionCount() const;
+    Transaction getTransaction(int index) const;
 
     // Setters
     void setAccountNumber(int num);
