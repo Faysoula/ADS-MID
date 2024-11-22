@@ -43,10 +43,6 @@ public:
     bool isValid() const;
     bool applyToBalance(double& balance) const;
 
-    // Static Functions
-    static bool compareByDate(const Transaction& t1, const Transaction& t2);
-    static bool compareByAmount(const Transaction& t1, const Transaction& t2);
-
 };
 
     //  ostream and istream operators

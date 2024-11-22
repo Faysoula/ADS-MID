@@ -100,16 +100,6 @@ bool Transaction::applyToBalance(double& balance) const {
     return true;
 }
 
-// Static Functions
-bool Transaction::compareByDate(const Transaction& t1, const Transaction& t2) {
-    return t1.date < t2.date;
-}
-
-bool Transaction::compareByAmount(const Transaction& t1, const Transaction& t2) {
-    return t1.amount < t2.amount;
-}
-
-
 // Overloaded Output Stream Operator
 ostream& operator<<(ostream& os, const Transaction& transaction) {
     os << "Transaction ID: " << transaction.getTransactionID() << "\n"
