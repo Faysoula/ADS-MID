@@ -13,6 +13,7 @@ void display_menu() {
     cout << "2. Apply Transaction\n" << endl;
     cout << "3. Generate Account Report\n" << endl;
     cout << "4. Delete Transaction\n" << endl;
+    cout << "5. Display Chart of Accounts" << endl;
     cout << "0. Exit\n" << endl;
     cout << "Enter choice: " << endl;
 }
@@ -97,6 +98,11 @@ int main() {
                 } catch (const runtime_error &e) {
                     cerr << "Error: " << e.what() << endl;
                 }
+                break;
+            }
+            case 5: {
+                cout << "\nDisplaying full chart of accounts:\n";
+                tree.printForestTree();
                 break;
             }
 //            case 4: {

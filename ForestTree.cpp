@@ -43,17 +43,45 @@ void ForestTree::buildFromFile(const string &filename) {
     }
 
     string line;
-    Account account;
     while (getline(file, line)) {
         istringstream iss(line);
-        iss >> account; // Using Account's operator>>
 
-        string accStr = to_string(account.getAccountNumber());
+        // Parse account number
+        int accountNumber;
+        if (!(iss >> accountNumber)) {
+            continue;  // Skip invalid lines
+        }
+
+        // Parse description (everything up to the last number)
+        string description;
+        string word;
+        string fullDescription;
+        double balance = 0.0;
+
+        // Read words until we hit the balance
+        while (iss >> word) {
+            // Try to convert to number (balance)
+            try {
+                balance = stod(word);
+                break;  // If successful, this was the balance
+            } catch (...) {
+                // If not a number, this is part of the description
+                if (!fullDescription.empty()) {
+                    fullDescription += " ";
+                }
+                fullDescription += word;
+            }
+        }
+
+        // Calculate parent number based on account number string
+        string accStr = to_string(accountNumber);
         int parentNumber = accStr.length() > 1 ?
                            stoi(accStr.substr(0, accStr.length() - 1)) : -1;
 
-        addAccount(account.getAccountNumber(), account.getDescription(), parentNumber);
+        // Add account to tree
+        addAccount(accountNumber, fullDescription, parentNumber);
     }
+
     file.close();
     cout << "Chart of accounts built from file successfully." << endl;
 }
@@ -80,22 +108,28 @@ void ForestTree::printDetailedReport(int accountNumber, const string &filename) 
 }
 
 void ForestTree::printForestTree() const {
+    cout << "\nChart of Accounts:\n------------------\n";
     for (NodePtr root: rootAccounts) {
-        root->print();
+        if (root != nullptr) {
+            printTreeHelper(root, 0);
+        }
     }
+    cout << "------------------\n";
 }
 
 NodePtr ForestTree::findAccount(int accountNumber) const {
     for (NodePtr root: rootAccounts) {
-        NodePtr found = root->findNode(root, accountNumber);
-        if (found) return found;
+        if (root) {
+            NodePtr found = root->findNode(root, accountNumber);
+            if (found) return found;
+        }
     }
     return nullptr;
 }
 
 // Helper function to print tree nodes recursively
 void ForestTree::printTreeHelper(NodePtr node, int level) const {
-    if (!node) {
+    if (!node || !node->getData().getAccountNumber()) {
         return;
     }
 
@@ -105,7 +139,9 @@ void ForestTree::printTreeHelper(NodePtr node, int level) const {
     }
 
     // Print account details
-    cout << node->getData().getAccountNumber() << " - " << node->getData().getDescription() << endl;
+    cout << node->getData().getAccountNumber() << " - "
+         << node->getData().getDescription()
+         << " (Balance: " << node->getData().getBalance() << ")" << endl;
 
     // Recur for child nodes
     printTreeHelper(node->getLeftChild(), level + 1);
@@ -116,37 +152,49 @@ void ForestTree::printTreeHelper(NodePtr node, int level) const {
 
 bool ForestTree::addAccount(int accountNumber, const string &description, int parentNumber) {
     // Create new account
-    Account newAccount(accountNumber, description, 0.0);  // Initial balance 0
+    Account newAccount(accountNumber, description, 0.0);
 
-    // If it's a root account (parent is -1)
+    // Handle root accounts (single digit)
     if (parentNumber == -1) {
-        // Check if an account with this number already exists
-        if (findAccount(accountNumber) != nullptr) {
-            return false;
+        if (findAccount(accountNumber)) {
+            return false;  // Account already exists
         }
-
-        // Create new root node
         NodePtr newNode = new TreeNode(newAccount);
         rootAccounts.push_back(newNode);
         return true;
     }
 
-    // For non-root accounts
-    // First check if parent exists
+    // Find parent node for non-root accounts
     NodePtr parentNode = findAccount(parentNumber);
     if (!parentNode) {
-        return false;  // Parent account doesn't exist
-    }
+        // If parent doesn't exist, try to find a suitable ancestor
+        string accStr = to_string(accountNumber);
+        string parentStr = accStr;
+        while (parentStr.length() > 1 && !parentNode) {
+            parentStr = parentStr.substr(0, parentStr.length() - 1);
+            parentNode = findAccount(stoi(parentStr));
+        }
 
-    // For each root, try to add the account
-    for (NodePtr root : rootAccounts) {
-        // Use TreeNode's addAccountNode which handles the hierarchy
-        if (root->addAccountNode(root, newAccount)) {
-            return true;
+        if (!parentNode) {
+            return false;  // No suitable parent found
         }
     }
 
-    return false;
+    // Check if account already exists
+    if (findAccount(accountNumber)) {
+        return false;
+    }
+
+    // Add the account under its parent
+    bool success = false;
+    for (NodePtr root: rootAccounts) {
+        if (root->addAccountNode(root, newAccount)) {
+            success = true;
+            break;
+        }
+    }
+
+    return success;
 }
 
 bool ForestTree::addTransaction(int accountNumber, double amount, const string &type) {

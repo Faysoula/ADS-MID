@@ -5,21 +5,22 @@
 #include "Account.h"
 #include <iostream>
 #include <iomanip>
+
 using namespace std;
 
-Account::Account():accountNumber(0), description(""), balance(0.0) {}
+Account::Account() : accountNumber(0), description(""), balance(0.0) {}
 
 Account::Account(int num, const string &desc, double bal) {
-    accountNumber=num;
-    description=desc;
-    balance=bal;
+    accountNumber = num;
+    description = desc;
+    balance = bal;
 }
 
-Account::Account(const Account& acc) {
-    accountNumber=acc.accountNumber;
-    description=acc.description;
-    balance=acc.balance;
-    transactions=acc.transactions;
+Account::Account(const Account &acc) {
+    accountNumber = acc.accountNumber;
+    description = acc.description;
+    balance = acc.balance;
+    transactions = acc.transactions;
 }
 
 Account::~Account() {}
@@ -45,33 +46,33 @@ int Account::getTransactionCount() const {
 }
 
 Transaction Account::getTransaction(int index) const {
-    if(index>=0 && index < transactions.size()) {
+    if (index >= 0 && index < transactions.size()) {
         return transactions[index];
     }
     throw out_of_range("Transaction index out of range :)");
 }
 
 void Account::setAccountNumber(int num) {
-    accountNumber=num;
+    accountNumber = num;
 }
 
 void Account::setDescription(const string &desc) {
-    description=desc;
+    description = desc;
 }
 
 void Account::setBalance(double bal) {
-    balance=bal;
+    balance = bal;
 }
 
 void Account::setTransaction(int index, const Transaction &t) {
-    if(index>=0 && index < transactions.size()) {
+    if (index >= 0 && index < transactions.size()) {
         Transaction oldT = transactions[index];
-        if(oldT.getDebitCredit() == 'D') {
+        if (oldT.getDebitCredit() == 'D') {
             balance -= oldT.getAmount();
         } else {
             balance += oldT.getAmount();
         }
-        transactions[index]=t;
+        transactions[index] = t;
         updateBalance(t);
     } else {
         throw out_of_range("Transaction out of range :)");
@@ -84,9 +85,9 @@ void Account::addTransaction(const Transaction &t) {
 }
 
 void Account::removeTransaction(int index) {
-    if(index>=0 && index<transactions.size()) {
+    if (index >= 0 && index < transactions.size()) {
         Transaction t = transactions[index];
-        if(t.getDebitCredit() == 'D') {
+        if (t.getDebitCredit() == 'D') {
             balance -= t.getAmount();
         } else {
             balance += t.getAmount();
@@ -96,15 +97,15 @@ void Account::removeTransaction(int index) {
 }
 
 void Account::updateBalance(const Transaction &t) {
-    if(t.getDebitCredit() == 'D') {
+    if (t.getDebitCredit() == 'D') {
         balance += t.getAmount();
-    } else if(t.getDebitCredit() == 'C') {
+    } else if (t.getDebitCredit() == 'C') {
         balance -= t.getAmount();
     }
 }
 
 string Account::getShortDescription() const {
-    return description.length()>10 ? description.substr(0,10) : description;
+    return description.length() > 10 ? description.substr(0, 10) : description;
 }
 
 /*bool Account::isParentOf(int otherAccountNum) const {
@@ -121,9 +122,9 @@ ostream &operator<<(ostream &os, const Account &account) {
     return os;
 }
 
-istream& operator>>(istream& is, Account& account) {
+istream &operator>>(istream &is, Account &account) {
     string line;
-    if(getline(is, line)) {
+    if (getline(is, line)) {
         istringstream iss(line);
 
         //read acc number
@@ -137,16 +138,16 @@ istream& operator>>(istream& is, Account& account) {
         string word;
         double balance;
 
-        while (iss>>word) {
+        while (iss >> word) {
             //creates a new string stream containing the curr word
             istringstream balanceCheck(word);
 
             //extract a double from the string stream
-            if(balanceCheck >> balance) {
+            if (balanceCheck >> balance) {
                 account.setBalance(balance);
                 break;
             }
-            if(!desc.empty())
+            if (!desc.empty())
                 desc += " ";
             desc += word;
         }
