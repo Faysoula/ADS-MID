@@ -100,25 +100,45 @@ int main() {
                 }
                 break;
             }
+            case 4: {
+                int accountNumber;
+                cout << "Enter account number: ";
+                cin >> accountNumber;
+
+                // First display all transactions for this account
+                NodePtr accountNode = tree.findAccount(accountNumber);
+                if (accountNode) {
+                    const vector<Transaction> &transactions = accountNode->getData().getTransactions();
+                    if (transactions.empty()) {
+                        cout << "No transactions found for this account.\n";
+                        break;
+                    }
+
+                    cout << "\nTransactions for account " << accountNumber << ":\n";
+                    for (int i = 0; i < transactions.size(); i++) {
+                        cout << "Index " << i << ": Amount = " << transactions[i].getAmount()
+                             << " (" << transactions[i].getDebitCredit() << ")\n";
+                    }
+
+                    int transactionIndex;
+                    cout << "\nEnter index of transaction to delete (0-" << transactions.size() - 1 << "): ";
+                    cin >> transactionIndex;
+
+                    if (tree.deleteTransaction(accountNumber, transactionIndex)) {
+                        cout << "Transaction deleted successfully.\n";
+                    } else {
+                        cout << "Failed to delete transaction.\n";
+                    }
+                } else {
+                    cout << "Account not found.\n";
+                }
+                break;
+            }
             case 5: {
                 cout << "\nDisplaying full chart of accounts:\n";
                 tree.printForestTree();
                 break;
             }
-//            case 4: {
-//                int accountNumber, transactionId;
-//                cout << "Enter account number: ";
-//                cin >> accountNumber;
-//                cout << "Enter transaction ID to delete: ";
-//                cin >> transactionId;
-//
-//                if (tree.deleteTransaction(accountNumber, transactionId)) {
-//                    cout << "Transaction deleted successfully.\n";
-//                } else {
-//                    cout << "Failed to delete transaction. Ensure the transaction exists in the specified account.\n";
-//                }
-//                break;
-//            }
             case 0:
                 cout << "Exiting program...\n";
                 break;

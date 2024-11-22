@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <ctime>
+#include <iomanip>
 #include <stdexcept>
 
 using namespace std;
@@ -99,12 +100,26 @@ void ForestTree::printDetailedReport(int accountNumber, const string &filename) 
     }
 
     const Account &account = accountNode->getData();
-    file << account << endl; // Using Account's operator<<
 
-    file << "Transactions:" << endl;
-    for (const Transaction &t: account.getTransactions()) {
-        file << t << endl; // Using Transaction's operator<<
+    // Print account header and information
+    file << "Account Details:\n";
+    file << "================\n";
+    file << account << "\n\n";  // Using Account's operator<<
+
+    // Print transactions
+    file << "Transaction History:\n";
+    file << "===================\n";
+    const vector<Transaction> &transactions = account.getTransactions();
+
+    if (transactions.empty()) {
+        file << "No transactions recorded.\n";
+    } else {
+        for (const Transaction &t: transactions) {
+            file << t << "\n\n";  // Using Transaction's operator<<
+        }
     }
+
+    file.close();
 }
 
 void ForestTree::printForestTree() const {
@@ -249,6 +264,70 @@ bool ForestTree::addTransaction(int accountNumber, double amount, const string &
         return true;
     } catch (const exception &e) {
         cerr << "Error: " << e.what() << endl;
+        return false;
+    }
+}
+
+bool ForestTree::deleteTransaction(int accountNumber, int transactionIndex) {
+    // Find the account node and its root
+    NodePtr accountNode = nullptr;
+    NodePtr rootNode = nullptr;
+
+    // Search through all root nodes to find both the account and its root
+    for (NodePtr root: rootAccounts) {
+        accountNode = root->findNode(root, accountNumber);
+        if (accountNode) {
+            rootNode = root;
+            while (rootNode->getRightSibling() &&
+                   to_string(rootNode->getRightSibling()->getData().getAccountNumber())[0] ==
+                   to_string(accountNode->getData().getAccountNumber())[0]) {
+                rootNode = rootNode->getRightSibling();
+            }
+            break;
+        }
+    }
+
+    if (!accountNode) {
+        cerr << "Error: Account not found for account number: " << accountNumber << endl;
+        return false;
+    }
+
+    Account &account = accountNode->getData();
+    const vector<Transaction> &transactions = account.getTransactions();
+
+    // Validate transaction index
+    if (transactionIndex < 0 || transactionIndex >= transactions.size()) {
+        cerr << "Error: Invalid transaction index. Please enter a number between 0 and "
+             << transactions.size() - 1 << endl;
+        return false;
+    }
+
+    try {
+        // Get the transaction before removing it to update balances
+        Transaction deletedTransaction = transactions[transactionIndex];
+
+        // Create an inverse transaction to update balances
+        Transaction inverseTransaction(
+                deletedTransaction.getTransactionID(),
+                deletedTransaction.getAmount(),
+                deletedTransaction.getDebitCredit() == 'D' ? 'C' : 'D'  // Invert D to C and C to D
+        );
+
+        // Remove the transaction from the account
+        account.removeTransaction(transactionIndex);
+
+        // Update balances through the hierarchy using the inverse transaction
+        for (NodePtr root: rootAccounts) {
+            if (to_string(root->getData().getAccountNumber())[0] ==
+                to_string(accountNumber)[0]) {
+                accountNode->updateBalance(root, inverseTransaction);
+                break;
+            }
+        }
+
+        return true;
+    } catch (const exception &e) {
+        cerr << "Error while deleting transaction: " << e.what() << endl;
         return false;
     }
 }

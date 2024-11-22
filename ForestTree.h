@@ -34,7 +34,7 @@ public:
 
     bool addTransaction(int accountNumber, double amount, const string &type);
 
-    bool deleteTransaction(int accountNumber, int transactionId);
+    bool deleteTransaction(int accountNumber, int transactionIndex);
 
     void printDetailedReport(int accountNumber, const string &filename) const;
 
