@@ -37,6 +37,7 @@ public:
 
     NodePtr getRightSibling() const;
 
+
     //setters
     void setData(const Account &acc);
 
@@ -49,17 +50,23 @@ public:
 
     bool hasSibling() const;
 
-    TreeNode &operator=(const TreeNode &);
+    //account hierarchy
 
-    void addchild(const Account &);
+    bool isValidChild(int parentNum, int childNum) const;
+
+    void addChild(const Account &);
 
     void addSibling(const Account &);
 
+    bool addAccountNode(NodePtr root, const Account &newAcc);
+
     void updateBalance(const Transaction &t);
 
-    bool isParent(int accNum) const;
+    NodePtr findNode(NodePtr root, int accNum);
 
     int getLevel(NodePtr) const;
+
+    TreeNode &operator=(const TreeNode &);
 
     void print() const;
 
@@ -68,9 +75,11 @@ private:
 
     void clean();
 
-    bool checkParent(int parentNum, int childNum) const;
-
     int getLevelHelper(NodePtr node, int currentLevel) const;
+
+//    NodePtr findLastChild() const;
+//    NodePtr findLastSibling() const;
+//    bool hasValidPrefix(const string& parent, const string& child) const;
 
 };
 
