@@ -201,12 +201,42 @@ bool TreeNode::addAccountNode(NodePtr root, const Account &newAcc) {
     }
 }
 
-void TreeNode::updateBalance(const Transaction &t) {
+void TreeNode::updateBalance(NodePtr root, Transaction &t) {
     if (account == nullptr) {
         throw std::runtime_error("Null account pointer ");
     }
-    account->updateBalance(t);//this should update all the parents its 4 you go up 4 maxium for the mac number is 4
+    // Get all parent nodes
+    vector<NodePtr> parents = getParentNodes(root);
+
+    // Update current account's balance
+    account->updateBalance(t);
+
+    // Update all parent balances
+    updateParentBalances(parents,
+                         t);//this should update all the parents its 4 you go up 4 maxium for the mac number is 4
 }//array of 4 pointers
+
+vector<NodePtr> TreeNode::getParentNodes(NodePtr root) {
+    vector<NodePtr> parents;
+    string accNumStr = to_string(account->getAccountNumber());
+
+    // For each digit we remove from the end, we get a parent account number
+    while (accNumStr.length() > 1) {
+        accNumStr = accNumStr.substr(0, accNumStr.length() - 1);
+        NodePtr parent = findNode(root, stoi(accNumStr));
+        if (parent) {
+            parents.push_back(parent);
+        }
+    }
+
+    return parents;
+}
+
+void TreeNode::updateParentBalances(const vector<NodePtr> &parents, const Transaction &t) {
+    for (NodePtr parent: parents) {
+        parent->account->updateBalance(t);
+    }
+}
 
 bool TreeNode::isValidChild(int parentNum, int childNum) const {
     string parent = to_string(parentNum);

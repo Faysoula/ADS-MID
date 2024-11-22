@@ -54,13 +54,11 @@ public:
 
     bool isValidChild(int parentNum, int childNum) const;
 
-    void addChild(const Account &);
-
-    void addSibling(const Account &);
-
     bool addAccountNode(NodePtr root, const Account &newAcc);
 
-    void updateBalance(const Transaction &t);
+    void updateBalance(NodePtr root, Transaction &t);
+
+    vector<NodePtr> getParentNodes(NodePtr root);
 
     NodePtr findNode(NodePtr root, int accNum);
 
@@ -76,6 +74,12 @@ private:
     void clean();
 
     int getLevelHelper(NodePtr node, int currentLevel) const;
+
+    void addChild(const Account &);
+
+    void addSibling(const Account &);
+
+    void updateParentBalances(const vector<NodePtr> &parents, const Transaction &t);
 
 //    NodePtr findLastChild() const;
 //    NodePtr findLastSibling() const;
