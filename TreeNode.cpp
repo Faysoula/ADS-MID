@@ -23,9 +23,9 @@ TreeNode::~TreeNode() {
 }
 
 //gets
-Account TreeNode::getData() const {
-    return *account;
-}
+//Account TreeNode::getData() const {
+//    return *account;
+//}
 
 NodePtr TreeNode::getLeftChild() const {
     return leftChild;
@@ -89,15 +89,23 @@ NodePtr TreeNode::findNode(NodePtr root, int accNum) {
     if (!root) {
         return nullptr;
     }
+
+    // Check current node
     if (root->account && root->account->getAccountNumber() == accNum) {
         return root;
     }
 
-    NodePtr child = root->leftChild;
-    while (child) {
-        NodePtr found = findNode(child, accNum);
+    // Check children first (depth-first search)
+    NodePtr found = nullptr;
+    if (root->leftChild) {
+        found = findNode(root->leftChild, accNum);
         if (found) return found;
-        child = child->rightSibling;
+    }
+
+    // Then check siblings
+    if (root->rightSibling) {
+        found = findNode(root->rightSibling, accNum);
+        if (found) return found;
     }
 
     return nullptr;
@@ -236,14 +244,17 @@ void TreeNode::updateBalance(NodePtr root, Transaction &t) {
 
 vector<NodePtr> TreeNode::getParentNodes(NodePtr root) {
     vector<NodePtr> parents;
-    string accNumStr = to_string(account->getAccountNumber());
+    string childNum = to_string(account->getAccountNumber());
 
-    // For each digit we remove from the end, we get a parent account number
-    while (accNumStr.length() > 1) {
-        accNumStr = accNumStr.substr(0, accNumStr.length() - 1);
-        NodePtr parent = findNode(root, stoi(accNumStr));
+    while (childNum.length() > 1) {
+        // Remove last digit to get parent number
+        childNum = childNum.substr(0, childNum.length() - 1);
+        int parentNum = stoi(childNum);
+
+        // First try to find in current root's tree
+        NodePtr parent = findNode(root, parentNum);
         if (parent) {
-            parents.push_back(parent);
+            parents.insert(parents.begin(), parent); // Insert at beginning to maintain order
         }
     }
 

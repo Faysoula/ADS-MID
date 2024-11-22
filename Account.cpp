@@ -81,7 +81,7 @@ void Account::setTransaction(int index, const Transaction &t) {
 
 void Account::addTransaction(const Transaction &t) {
     transactions.push_back(t);
-    updateBalance(t);
+//    updateBalance(t);
 }
 
 void Account::removeTransaction(int index) {

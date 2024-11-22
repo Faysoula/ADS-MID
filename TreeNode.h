@@ -31,11 +31,15 @@ public:
     ~TreeNode();
 
     //all the gets
-    Account getData() const;
+
 
     NodePtr getLeftChild() const;
 
     NodePtr getRightSibling() const;
+
+    Account &getData() { return *account; }
+
+    const Account &getData() const { return *account; }
 
 
     //setters

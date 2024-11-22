@@ -204,8 +204,25 @@ bool ForestTree::addTransaction(int accountNumber, double amount, const string &
         return false;
     }
 
-    // Find the account node by account number
-    NodePtr accountNode = findAccount(accountNumber);
+    // Find the account node and its root
+    NodePtr accountNode = nullptr;
+    NodePtr rootNode = nullptr;
+
+    // Search through all root nodes to find both the account and its root
+    for (NodePtr root: rootAccounts) {
+        accountNode = root->findNode(root, accountNumber);
+        if (accountNode) {
+            rootNode = root;
+            // Keep searching until we find the top-most root
+            while (rootNode->getRightSibling() &&
+                   to_string(rootNode->getRightSibling()->getData().getAccountNumber())[0] ==
+                   to_string(accountNode->getData().getAccountNumber())[0]) {
+                rootNode = rootNode->getRightSibling();
+            }
+            break;
+        }
+    }
+
     if (!accountNode) {
         cerr << "Error: Account not found for account number: " << accountNumber << endl;
         return false;
@@ -217,19 +234,21 @@ bool ForestTree::addTransaction(int accountNumber, double amount, const string &
     // Create the transaction
     Transaction transaction(transactionID, amount, type[0]);
 
-    // Add the transaction and update balances
     try {
+        // First add the transaction to the account
         accountNode->getData().addTransaction(transaction);
-        accountNode->updateBalance(accountNode, transaction);
-        return true;  // Success
-    } catch (const invalid_argument &) {
-        cerr << "Error: Invalid argument encountered while adding the transaction." << endl;
-        return false;
-    } catch (const out_of_range &) {
-        cerr << "Error: Out-of-range exception encountered while adding the transaction." << endl;
-        return false;
-    } catch (...) {
-        cerr << "Error: An unknown exception occurred while adding the transaction." << endl;
+
+        // Then update balances starting from the main root of this account's tree
+        for (NodePtr root: rootAccounts) {
+            if (to_string(root->getData().getAccountNumber())[0] ==
+                to_string(accountNumber)[0]) {
+                accountNode->updateBalance(root, transaction);
+                break;
+            }
+        }
+        return true;
+    } catch (const exception &e) {
+        cerr << "Error: " << e.what() << endl;
         return false;
     }
 }
