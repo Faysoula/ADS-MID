@@ -9,34 +9,42 @@
 #include <string>
 #include <vector>
 #include "TreeNode.h"
+#include "Account.h"
+#include "Transaction.h"
 
 using namespace std;
 
 class ForestTree {
 private:
     vector<NodePtr> rootAccounts; // Vector of root nodes representing the forest tree
+    void cleanupTree();
 
 public:
     // Constructor and Destructor
     ForestTree();
+
     ~ForestTree();
 
-    // Function to initialize an empty forest tree
     void initialize();
 
-    // Function to build a chart of accounts from a file
     void buildFromFile(const string &filename);
 
-    // Utility to print the entire forest tree (for debugging and verification)
+    //needs fixing with tree node add acount maybe use inorder to add
+    bool addAccount(int accountNumber, const string &description, int parentNumber);
+
+    bool addTransaction(int accountNumber, double amount, const string &type);
+
+    bool deleteTransaction(int accountNumber, int transactionId);
+
+    void printDetailedReport(int accountNumber, const string &filename) const;
+
     void printForestTree() const;
+
+    NodePtr findAccount(int accountNumber) const;
 
 private:
     // Helper function to recursively print tree nodes
     void printTreeHelper(NodePtr node, int level) const;
-    // Recursive helper to find a node by account number
-    NodePtr findNodeByAccountNumber(NodePtr node, int accountNumber) const;
-
-
 };
 
 #endif // FORESTTREE_H

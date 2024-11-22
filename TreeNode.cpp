@@ -257,8 +257,7 @@ int TreeNode::getLevel(NodePtr root) const {
         return 0;
     }
 
-    getLevelHelper(root->leftChild, 1);
-
+    return getLevelHelper(root->leftChild, 1);
 }
 
 //when your adding a trans ez il balance bas kif
