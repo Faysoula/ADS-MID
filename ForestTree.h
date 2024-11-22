@@ -6,43 +6,37 @@
 #define FORESTTREE_H
 
 #include <iostream>
-#include <vector>
 #include <string>
-#include <fstream>
-#include <sstream>
-#include "Account.h"
+#include <vector>
+#include "TreeNode.h"
 
 using namespace std;
 
 class ForestTree {
 private:
-    vector<Account*> rootAccounts; // Vector of root accounts
+    vector<NodePtr> rootAccounts; // Vector of root nodes representing the forest tree
 
 public:
+    // Constructor and Destructor
     ForestTree();
     ~ForestTree();
 
-    // Initialize an empty tree
+    // Function to initialize an empty forest tree
     void initialize();
 
-    // Build chart of accounts from a file
-    void buildFromFile(const std::string& filename);
+    // Function to build a chart of accounts from a file
+    void buildFromFile(const string &filename);
 
-    // Add account (with optional parent)
-    bool addAccount(int accountNumber, const std::string& description, int parentNumber = -1);
+    // Utility to print the entire forest tree (for debugging and verification)
+    void printForestTree() const;
 
-    // Add and delete transactions
-    bool addTransaction(int accountNumber, double amount, const std::string& type);
-    bool deleteTransaction(int accountNumber, int transactionId);
+private:
+    // Helper function to recursively print tree nodes
+    void printTreeHelper(NodePtr node, int level) const;
+    // Recursive helper to find a node by account number
+    NodePtr findNodeByAccountNumber(NodePtr node, int accountNumber) const;
 
-    // Print detailed report for an account
-    void printDetailedReport(int accountNumber, const std::string& outputFilename);
 
-    // Search for an account by number
-    Account* searchAccount(int accountNumber) const;
-
-    // Print the entire tree
-    void printTree(const std::string& outputFilename) const;
 };
 
 #endif // FORESTTREE_H
