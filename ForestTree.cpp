@@ -58,50 +58,6 @@ void ForestTree::buildFromFile(const string &filename) {
     cout << "Chart of accounts built from file successfully." << endl;
 }
 
-bool ForestTree::addAccount(int accountNumber, const string &description, int parentNumber) {
-    Account newAccount(accountNumber, description, 0.0);
-
-    // Handle root accounts (parentNumber == -1)
-    if (parentNumber == -1) {
-        // Check if root account already exists
-        for (NodePtr root: rootAccounts) {
-            if (root->getData().getAccountNumber() == accountNumber) {
-                return false;  // Root already exists
-            }
-        }
-
-        NodePtr newNode = new TreeNode(newAccount);
-        rootAccounts.push_back(newNode);
-        return true;
-    }
-
-    // For non-root accounts, we need to find the correct root to start traversal
-    string accStr = to_string(accountNumber);
-    char firstDigit = accStr[0];
-    NodePtr rootNode = nullptr;
-
-    // Find the root node that this account belongs to
-    for (NodePtr root: rootAccounts) {
-        if (to_string(root->getData().getAccountNumber())[0] == firstDigit) {
-            rootNode = root;
-            break;
-        }
-    }
-
-    // If we couldn't find the root node, we can't add the account
-    if (!rootNode) {
-        return false;
-    }
-
-    // Use TreeNode's addAccountNode which handles:
-    // - Checking if account already exists
-    // - Validating parent-child relationship
-    // - Finding the parent node
-    // - Adding the account in the correct position
-    return rootNode->addAccountNode(rootNode, newAccount);
-}
-
-
 void ForestTree::printDetailedReport(int accountNumber, const string &filename) const {
     ofstream file(filename);
     if (!file.is_open()) {
@@ -158,6 +114,41 @@ void ForestTree::printTreeHelper(NodePtr node, int level) const {
     printTreeHelper(node->getRightSibling(), level);
 }
 
+bool ForestTree::addAccount(int accountNumber, const string &description, int parentNumber) {
+    // Create new account
+    Account newAccount(accountNumber, description, 0.0);  // Initial balance 0
+
+    // If it's a root account (parent is -1)
+    if (parentNumber == -1) {
+        // Check if an account with this number already exists
+        if (findAccount(accountNumber) != nullptr) {
+            return false;
+        }
+
+        // Create new root node
+        NodePtr newNode = new TreeNode(newAccount);
+        rootAccounts.push_back(newNode);
+        return true;
+    }
+
+    // For non-root accounts
+    // First check if parent exists
+    NodePtr parentNode = findAccount(parentNumber);
+    if (!parentNode) {
+        return false;  // Parent account doesn't exist
+    }
+
+    // For each root, try to add the account
+    for (NodePtr root : rootAccounts) {
+        // Use TreeNode's addAccountNode which handles the hierarchy
+        if (root->addAccountNode(root, newAccount)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool ForestTree::addTransaction(int accountNumber, double amount, const string &type) {
     // Validate transaction type
     if (type != "D" && type != "C") {
@@ -194,5 +185,3 @@ bool ForestTree::addTransaction(int accountNumber, double amount, const string &
         return false;
     }
 }
-
-

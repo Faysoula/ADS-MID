@@ -44,7 +44,7 @@ public:
     void removeTransaction(int index);
     void updateBalance(const Transaction& t);
     string getShortDescription() const;
-    bool isParentOf(int otherAccountNum) const;
+    //bool isParentOf(int otherAccountNum) const;
 
 };
 

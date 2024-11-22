@@ -107,12 +107,12 @@ string Account::getShortDescription() const {
     return description.length()>10 ? description.substr(0,10) : description;
 }
 
-bool Account::isParentOf(int otherAccountNum) const {
+/*bool Account::isParentOf(int otherAccountNum) const {
     string parentNum = to_string(accountNumber);
     string childNum = to_string(otherAccountNum);
     return childNum.length()>parentNum.length() &&
         childNum.substr(0, parentNum.length()) == parentNum;
-}
+}*/
 
 ostream &operator<<(ostream &os, const Account &account) {
     os << account.getAccountNumber() << " "
