@@ -1,23 +1,37 @@
 #include <iostream>
 #include <string>
+#include <filesystem>
 #include "ForestTree.h"
+#include <direct.h>
 
 using namespace std;
 
+
 void display_menu() {
-    cout << "1. Add Account\n";
-    cout << "2. Apply Transaction\n";
-    cout << "3. Generate Account Report\n";
-    cout << "4. Delete Transaction\n";
-    cout << "0. Exit\n";
-    cout << "Enter choice: ";
+    cout << "\nChart of Accounts Management System" << endl;
+    cout << "1. Add Account\n" << endl;
+    cout << "2. Apply Transaction\n" << endl;
+    cout << "3. Generate Account Report\n" << endl;
+    cout << "4. Delete Transaction\n" << endl;
+    cout << "0. Exit\n" << endl;
+    cout << "Enter choice: " << endl;
+}
+
+void ensure_reports_directory() {
+    const string reportDir = "reports";
+    if (_mkdir(reportDir.c_str()) == 0) {
+        cout << "Created reports directory." << endl;
+    }
+    // If directory already exists, -1 is returned but that's okay
 }
 
 int main() {
     ForestTree tree;
 
+    ensure_reports_directory();
+
     // Build chart of accounts from a file
-    tree.buildFromFile("accountswithspace.txt");
+    tree.buildFromFile("C:/Users/User/CLionProjects/ADS-MID/accountswithspace.txt");
 
     int choice;
     do {
@@ -68,30 +82,37 @@ int main() {
             }
             case 3: {
                 int accountNumber;
-                string outputFilename;
+                string reportName;
                 cout << "Enter account number for report: ";
                 cin >> accountNumber;
-                cout << "Enter output filename: ";
-                cin >> outputFilename;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                tree.printDetailedReport(accountNumber, outputFilename);
-                cout << "Report generated: " << outputFilename << endl;
-                break;
-            }
-            case 4: {
-                int accountNumber, transactionId;
-                cout << "Enter account number: ";
-                cin >> accountNumber;
-                cout << "Enter transaction ID to delete: ";
-                cin >> transactionId;
+                cout << "Enter report name (without extension): ";
+                getline(cin, reportName);
 
-                if (tree.deleteTransaction(accountNumber, transactionId)) {
-                    cout << "Transaction deleted successfully.\n";
-                } else {
-                    cout << "Failed to delete transaction. Ensure the transaction exists in the specified account.\n";
+                string outputPath = "reports/" + reportName + ".txt";
+                try {
+                    tree.printDetailedReport(accountNumber, outputPath);
+                    cout << "Report generated successfully at: " << outputPath << endl;
+                } catch (const runtime_error &e) {
+                    cerr << "Error: " << e.what() << endl;
                 }
                 break;
             }
+//            case 4: {
+//                int accountNumber, transactionId;
+//                cout << "Enter account number: ";
+//                cin >> accountNumber;
+//                cout << "Enter transaction ID to delete: ";
+//                cin >> transactionId;
+//
+//                if (tree.deleteTransaction(accountNumber, transactionId)) {
+//                    cout << "Transaction deleted successfully.\n";
+//                } else {
+//                    cout << "Failed to delete transaction. Ensure the transaction exists in the specified account.\n";
+//                }
+//                break;
+//            }
             case 0:
                 cout << "Exiting program...\n";
                 break;

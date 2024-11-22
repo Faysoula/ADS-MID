@@ -85,6 +85,24 @@ bool TreeNode::hasSibling() const {
     return rightSibling != NULL;
 }
 
+NodePtr TreeNode::findNode(NodePtr root, int accNum) {
+    if (!root) {
+        return nullptr;
+    }
+    if (root->account && root->account->getAccountNumber() == accNum) {
+        return root;
+    }
+
+    NodePtr child = root->leftChild;
+    while (child) {
+        NodePtr found = findNode(child, accNum);
+        if (found) return found;
+        child = child->rightSibling;
+    }
+
+    return nullptr;
+}
+
 void TreeNode::addChild(const Account &acc) {
     NodePtr newChild = new TreeNode(acc);
 
@@ -310,10 +328,10 @@ void TreeNode::copyForm(const TreeNode &other) {
     account = (other.account != NULL) ? new Account(*other.account) : NULL;
 
     // Deep copy of child nodes
-    leftChild = (other.leftChild != nullptr) ? new TreeNode(*other.leftChild) : NULL;
+    leftChild = (other.leftChild != NULL) ? new TreeNode(*other.leftChild) : NULL;
 
     // Deep copy of sibling nodes
-    rightSibling = (other.rightSibling != nullptr) ? new TreeNode(*other.rightSibling) : NULL;
+    rightSibling = (other.rightSibling != NULL) ? new TreeNode(*other.rightSibling) : NULL;
 }
 
 
@@ -325,23 +343,5 @@ void TreeNode::clean() {
     // Delete sibling subtree
     delete rightSibling;
     rightSibling = nullptr;
-}
-
-NodePtr TreeNode::findNode(NodePtr root, int accNum) {
-    if (!root) {
-        return nullptr;
-    }
-    if (root->account && root->account->getAccountNumber() == accNum) {
-        return root;
-    }
-
-    NodePtr child = root->leftChild;
-    while (child) {
-        NodePtr found = findNode(child, accNum);
-        if (found) return found;
-        child = child->rightSibling;
-    }
-
-    return nullptr;
 }
 
