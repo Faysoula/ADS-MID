@@ -244,7 +244,7 @@ bool ForestTree::addTransaction(int accountNumber, double amount, const string &
     }
 
     // Create a unique transaction ID
-    string transactionID = to_string(accountNumber) + "_" + to_string(time(nullptr));
+    string transactionID = to_string(accountNumber) + "-" + to_string(time(nullptr));
 
     // Create the transaction
     Transaction transaction(transactionID, amount, type[0]);

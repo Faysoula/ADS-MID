@@ -111,6 +111,7 @@ NodePtr TreeNode::findNode(NodePtr root, int accNum) {
     return nullptr;
 }
 
+
 void TreeNode::addChild(const Account &acc) {
     NodePtr newChild = new TreeNode(acc);
 
@@ -228,19 +229,31 @@ bool TreeNode::addAccountNode(NodePtr root, const Account &newAcc) {
 }
 
 void TreeNode::updateBalance(NodePtr root, Transaction &t) {
-    if (account == nullptr) {
-        throw std::runtime_error("Null account pointer ");
+    if (!account) {
+        throw runtime_error("Null account pointer");
     }
-    // Get all parent nodes
+
+    // Get parent nodes from the main root of this account's tree
     vector<NodePtr> parents = getParentNodes(root);
 
-    // Update current account's balance
-    account->updateBalance(t);
+    // Update the current account's balance first
+    if (t.getDebitCredit() == 'D') {
+        account->setBalance(account->getBalance() + t.getAmount());
+    } else if (t.getDebitCredit() == 'C') {
+        account->setBalance(account->getBalance() - t.getAmount());
+    }
 
-    // Update all parent balances
-    updateParentBalances(parents,
-                         t);//this should update all the parents its 4 you go up 4 maxium for the mac number is 4
-}//array of 4 pointers
+    // Update all parent balances from bottom to top
+    for (NodePtr parent: parents) {
+        if (parent && parent->account) {
+            if (t.getDebitCredit() == 'D') {
+                parent->account->setBalance(parent->account->getBalance() + t.getAmount());
+            } else if (t.getDebitCredit() == 'C') {
+                parent->account->setBalance(parent->account->getBalance() - t.getAmount());
+            }
+        }
+    }
+}
 
 vector<NodePtr> TreeNode::getParentNodes(NodePtr root) {
     vector<NodePtr> parents;
