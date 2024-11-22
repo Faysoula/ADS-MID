@@ -1,10 +1,17 @@
 //
 // Created by asus on 11/19/2024.
 //
+//Roa Al Assaad 11/22/2024 addTransaction and removeTransaction
 
 #include "ForestTree.h"
 #include <fstream>
 #include <sstream>
+#include <iostream>
+#include <string>
+#include <ctime>
+#include <stdexcept>
+
+using namespace std;
 
 // Constructor
 ForestTree::ForestTree() {}
@@ -149,6 +156,43 @@ void ForestTree::printTreeHelper(NodePtr node, int level) const {
 
     // Recur for sibling nodes
     printTreeHelper(node->getRightSibling(), level);
+}
+
+bool ForestTree::addTransaction(int accountNumber, double amount, const string &type) {
+    // Validate transaction type
+    if (type != "D" && type != "C") {
+        cerr << "Error: Invalid transaction type. Must be 'D' (debit) or 'C' (credit)." << endl;
+        return false;
+    }
+
+    // Find the account node by account number
+    NodePtr accountNode = findAccount(accountNumber);
+    if (!accountNode) {
+        cerr << "Error: Account not found for account number: " << accountNumber << endl;
+        return false;
+    }
+
+    // Create a unique transaction ID
+    string transactionID = to_string(accountNumber) + "_" + to_string(time(nullptr));
+
+    // Create the transaction
+    Transaction transaction(transactionID, amount, type[0]);
+
+    // Add the transaction and update balances
+    try {
+        accountNode->getData().addTransaction(transaction);
+        accountNode->updateBalance(accountNode, transaction);
+        return true;  // Success
+    } catch (const invalid_argument &) {
+        cerr << "Error: Invalid argument encountered while adding the transaction." << endl;
+        return false;
+    } catch (const out_of_range &) {
+        cerr << "Error: Out-of-range exception encountered while adding the transaction." << endl;
+        return false;
+    } catch (...) {
+        cerr << "Error: An unknown exception occurred while adding the transaction." << endl;
+        return false;
+    }
 }
 
 
