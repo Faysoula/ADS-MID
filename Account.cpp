@@ -84,10 +84,6 @@ void Account::addTransaction(const Transaction &t) {
 //    updateBalance(t);
 }
 
-//ANA B Z A B E T L CODEEE
-
-//shou badak mnl remove :(
-
 void Account::removeTransaction(int index) {
     if (index >= 0 && index < transactions.size()) {
         Transaction t = transactions[index];

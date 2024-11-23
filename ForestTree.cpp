@@ -212,13 +212,7 @@ bool ForestTree::addAccount(int accountNumber, const string &description, int pa
     return success;
 }
 
-bool ForestTree::addTransaction(int accountNumber, double amount, const string &type) {
-    // Validate transaction type
-    if (type != "D" && type != "C") {
-        cerr << "Error: Invalid transaction type. Must be 'D' (debit) or 'C' (credit)." << endl;
-        return false;
-    }
-
+bool ForestTree::addTransaction(int accountNumber, Transaction& transaction) {
     // Find the account node and its root
     NodePtr accountNode = nullptr;
     NodePtr rootNode = nullptr;
@@ -242,12 +236,6 @@ bool ForestTree::addTransaction(int accountNumber, double amount, const string &
         cerr << "Error: Account not found for account number: " << accountNumber << endl;
         return false;
     }
-
-    // Create a unique transaction ID
-    string transactionID = to_string(accountNumber) + "-" + to_string(time(nullptr));
-
-    // Create the transaction
-    Transaction transaction(transactionID, amount, type[0]);
 
     try {
         // First add the transaction to the account

@@ -9,13 +9,14 @@ using namespace std;
 
 void display_menu() {
     cout << "\nChart of Accounts Management System" << endl;
-    cout << "1. Add Account\n" << endl;
-    cout << "2. Apply Transaction\n" << endl;
-    cout << "3. Generate Account Report\n" << endl;
-    cout << "4. Delete Transaction\n" << endl;
+    cout << "=======================================" << endl;
+    cout << "1. Add Account" << endl;
+    cout << "2. Apply Transaction" << endl;
+    cout << "3. Generate Account Report" << endl;
+    cout << "4. Delete Transaction" << endl;
     cout << "5. Display Chart of Accounts" << endl;
-    cout << "0. Exit\n" << endl;
-    cout << "Enter choice: " << endl;
+    cout << "0. Exit" << endl;
+    cout << "\nEnter choice: ";
 }
 
 void ensure_reports_directory() {
@@ -32,7 +33,7 @@ int main() {
     ensure_reports_directory();
 
     // Build chart of accounts from a file
-    tree.buildFromFile("C:/Users/User/CLionProjects/ADS-MID/accountswithspace.txt");
+    tree.buildFromFile("C:/Users/MayaH/CLionProjects/ADS-MID/accountswithspace.txt");
 
     int choice;
     do {
@@ -52,32 +53,27 @@ int main() {
                 cin >> parentNumber;
 
                 if (tree.addAccount(accountNumber, description, parentNumber)) {
-                    cout << "Account added successfully.\n";
+                    cout << "\nAccount added successfully.";
                 } else {
-                    cout << "Failed to add account. Ensure the account number is unique and parent exists.\n";
+                    cout << "\nFailed to add account. Ensure the account number is unique and parent exists.";
                 }
                 break;
             }
             case 2: {
                 int accountNumber;
-                double amount;
-                string type;
                 cout << "Enter account number for transaction: ";
                 cin >> accountNumber;
-                cout << "Enter amount: ";
-                cin >> amount;
-                cout << "Enter type (D for debit, C for credit): ";
-                cin >> type;
 
-                if (type != "D" && type != "C") {
-                    cout << "Invalid transaction type. Use 'D' for debit or 'C' for credit.\n";
-                    break;
-                }
+                // Create a transaction using the overloaded >> operator
+                Transaction newTransaction;
+                cin >> newTransaction;  // This will prompt for all transaction details
 
-                if (tree.addTransaction(accountNumber, amount, type)) {
-                    cout << "Transaction applied successfully.\n";
+                if (tree.addTransaction(accountNumber, newTransaction)) {
+                    cout << "\nTransaction applied successfully." << endl;
+                    cout << "-----------------------------------";
                 } else {
-                    cout << "Failed to apply transaction. Ensure the account exists.\n";
+                    cerr << "\nFailed to apply transaction. Ensure the account exists." << endl;
+                    cout << "-----------------------------------";
                 }
                 break;
             }

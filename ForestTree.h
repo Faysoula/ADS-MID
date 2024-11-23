@@ -32,7 +32,7 @@ public:
     //needs fixing with tree node add acount maybe use inorder to add
     bool addAccount(int accountNumber, const string &description, int parentNumber);
 
-    bool addTransaction(int accountNumber, double amount, const string &type);
+    bool addTransaction(int accountNumber, Transaction &transaction);
 
     bool deleteTransaction(int accountNumber, int transactionIndex);
 
