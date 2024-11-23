@@ -42,20 +42,19 @@ int main() {
 
         switch (choice) {
             case 1: {
-                int accountNumber, parentNumber;
-                string description;
-                cout << "Enter account number: ";
-                cin >> accountNumber;
-                cout << "Enter description: ";
-                cin.ignore();
-                getline(cin, description);
+                Account newAccount;
+                int parentNumber;
+
+                cout << "Enter account details (number description balance):\n";
+                cin >> newAccount;
+
                 cout << "Enter parent account number (-1 for root account): ";
                 cin >> parentNumber;
 
-                if (tree.addAccount(accountNumber, description, parentNumber)) {
-                    cout << "\nAccount added successfully.";
+                if (tree.addAccount(newAccount, parentNumber)) {
+                    cout << "\nAccount added successfully." << endl;
                 } else {
-                    cout << "\nFailed to add account. Ensure the account number is unique and parent exists.";
+                    cout << "\nFailed to add account. Ensure the account number is unique and parent exists." << endl;
                 }
                 break;
             }

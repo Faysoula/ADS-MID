@@ -8,7 +8,6 @@
 #include <sstream>
 #include <iostream>
 #include <string>
-#include <ctime>
 #include <iomanip>
 #include <stdexcept>
 
@@ -36,7 +35,7 @@ void ForestTree::initialize() {
 }
 
 // Function to build a chart of accounts from a file
-void ForestTree::buildFromFile(const string &filename) {
+void ForestTree::buildFromFile(const string& filename) {
     ifstream file(filename);
     if (!file.is_open()) {
         cerr << "Error opening file: " << filename << endl;
@@ -45,42 +44,32 @@ void ForestTree::buildFromFile(const string &filename) {
 
     string line;
     while (getline(file, line)) {
-        istringstream iss(line);
-
-        // Parse account number
-        int accountNumber;
-        if (!(iss >> accountNumber)) {
-            continue;  // Skip invalid lines
+        // Skip empty lines
+        if (line.empty()) {
+            continue;
         }
 
-        // Parse description (everything up to the last number)
-        string description;
-        string word;
-        string fullDescription;
-        double balance = 0.0;
+        // Create a string stream from the line
+        istringstream lineStream(line);
+        Account newAccount;
 
-        // Read words until we hit the balance
-        while (iss >> word) {
-            // Try to convert to number (balance)
-            try {
-                balance = stod(word);
-                break;  // If successful, this was the balance
-            } catch (...) {
-                // If not a number, this is part of the description
-                if (!fullDescription.empty()) {
-                    fullDescription += " ";
-                }
-                fullDescription += word;
-            }
+        try {
+            // Use Account's operator>> to read the account details
+            lineStream >> newAccount;
+
+            // Calculate parent number based on account number string
+            string accStr = to_string(newAccount.getAccountNumber());
+            int parentNumber = accStr.length() > 1 ?
+                             stoi(accStr.substr(0, accStr.length() - 1)) : -1;
+
+            // Add account to tree
+            addAccount(newAccount, parentNumber);
+
+        } catch (const exception& e) {
+            cerr << "Error processing line: " << line << endl;
+            cerr << "Error details: " << e.what() << endl;
+            continue;  // Skip this line and continue with the next one
         }
-
-        // Calculate parent number based on account number string
-        string accStr = to_string(accountNumber);
-        int parentNumber = accStr.length() > 1 ?
-                           stoi(accStr.substr(0, accStr.length() - 1)) : -1;
-
-        // Add account to tree
-        addAccount(accountNumber, fullDescription, parentNumber);
     }
 
     file.close();
@@ -123,13 +112,18 @@ void ForestTree::printDetailedReport(int accountNumber, const string &filename) 
 }
 
 void ForestTree::printForestTree() const {
-    cout << "\nChart of Accounts:\n------------------\n";
-    for (NodePtr root: rootAccounts) {
-        if (root != nullptr) {
+    if (rootAccounts.empty()) {
+        cout << "Tree is empty." << endl;
+        return;
+    }
+
+    cout << "\nChart of Accounts:\n==================\n";
+    for (NodePtr root : rootAccounts) {
+        if (root) {
             printTreeHelper(root, 0);
         }
     }
-    cout << "------------------\n";
+    cout << "==================\n";
 }
 
 NodePtr ForestTree::findAccount(int accountNumber) const {
@@ -165,13 +159,12 @@ void ForestTree::printTreeHelper(NodePtr node, int level) const {
     printTreeHelper(node->getRightSibling(), level);
 }
 
-bool ForestTree::addAccount(int accountNumber, const string &description, int parentNumber) {
-    // Create new account
-    Account newAccount(accountNumber, description, 0.0);
+bool ForestTree::addAccount(const Account& newAccount, int parentNumber) {
+    int accNum = newAccount.getAccountNumber();
 
     // Handle root accounts (single digit)
     if (parentNumber == -1) {
-        if (findAccount(accountNumber)) {
+        if (findAccount(accNum)) {
             return false;  // Account already exists
         }
         NodePtr newNode = new TreeNode(newAccount);
@@ -183,7 +176,7 @@ bool ForestTree::addAccount(int accountNumber, const string &description, int pa
     NodePtr parentNode = findAccount(parentNumber);
     if (!parentNode) {
         // If parent doesn't exist, try to find a suitable ancestor
-        string accStr = to_string(accountNumber);
+        string accStr = to_string(accNum);
         string parentStr = accStr;
         while (parentStr.length() > 1 && !parentNode) {
             parentStr = parentStr.substr(0, parentStr.length() - 1);
@@ -196,7 +189,7 @@ bool ForestTree::addAccount(int accountNumber, const string &description, int pa
     }
 
     // Check if account already exists
-    if (findAccount(accountNumber)) {
+    if (findAccount(accNum)) {
         return false;
     }
 

@@ -30,7 +30,7 @@ public:
     void buildFromFile(const string &filename);
 
     //needs fixing with tree node add acount maybe use inorder to add
-    bool addAccount(int accountNumber, const string &description, int parentNumber);
+    bool addAccount(const Account& newAccount, int parentNumber);
 
     bool addTransaction(int accountNumber, Transaction &transaction);
 

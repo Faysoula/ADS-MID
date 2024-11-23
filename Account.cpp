@@ -122,36 +122,51 @@ ostream &operator<<(ostream &os, const Account &account) {
     return os;
 }
 
-istream &operator>>(istream &is, Account &account) {
+istream& operator>>(istream& is, Account& account) {
+    int accNum;
+    is >> accNum;  // Read account number
+    account.setAccountNumber(accNum);
+
+    // Skip any whitespace before the description
+    is >> ws;
+
+    string desc;
+    double bal;
+
+    // Read the entire line into a string
     string line;
-    if (getline(is, line)) {
-        istringstream iss(line);
+    getline(is, line);
 
-        //read acc number
-        int accNum;
-        account.setAccountNumber(accNum);
+    // Create a stream from the line
+    istringstream lineStream(line);
 
-        //skip whitespace
-        iss >> ws;
+    // Vector to store all words
+    vector<string> words;
+    string word;
 
-        string desc;
-        string word;
-        double balance;
-
-        while (iss >> word) {
-            //creates a new string stream containing the curr word
-            istringstream balanceCheck(word);
-
-            //extract a double from the string stream
-            if (balanceCheck >> balance) {
-                account.setBalance(balance);
-                break;
-            }
-            if (!desc.empty())
-                desc += " ";
-            desc += word;
-        }
-        account.setDescription(desc);
+    // Read all words into vector
+    while (lineStream >> word) {
+        words.push_back(word);
     }
+
+    if (!words.empty()) {
+        // Last word should be the balance
+        try {
+            bal = stod(words.back());
+            words.pop_back();  // Remove balance from words
+        } catch (...) {
+            bal = 0.0;  // Default balance if not found
+        }
+
+        // Join remaining words for description
+        desc = "";
+        for (size_t i = 0; i < words.size(); ++i) {
+            if (i > 0) desc += " ";
+            desc += words[i];
+        }
+    }
+
+    account.setDescription(desc);
+    account.setBalance(bal);
     return is;
 }
