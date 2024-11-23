@@ -15,6 +15,7 @@ void display_menu() {
     cout << "3. Generate Account Report" << endl;
     cout << "4. Delete Transaction" << endl;
     cout << "5. Display Chart of Accounts" << endl;
+    cout << "6. Search Account" << endl;
     cout << "0. Exit" << endl;
     cout << "\nEnter choice: ";
 }
@@ -33,7 +34,7 @@ int main() {
     ensure_reports_directory();
 
     // Build chart of accounts from a file
-    tree.buildFromFile("C:/Users/MayaH/CLionProjects/ADS-MID/accountswithspace.txt");
+    tree.buildFromFile("C:/Users/AMOEBA/CLionProjects/ADS-MID5/accountswithspace.txt");
 
     int choice;
     do {
@@ -134,6 +135,24 @@ int main() {
                 tree.printForestTree();
                 break;
             }
+            case 6: {
+                int accountNumber;
+                cout << "Enter account number to search: ";
+                cin >> accountNumber;
+
+                NodePtr accountNode = tree.findAccount(accountNumber);
+                if (accountNode) {
+                    const Account& account = accountNode->getData();
+                    cout << "\nAccount Found:" << endl;
+                    cout << "Account Number: " << account.getAccountNumber() << endl;
+                    cout << "Description: " << account.getDescription() << endl;
+                    cout << "Balance: " << fixed << setprecision(2) << account.getBalance() << endl;
+                } else {
+                    cout << "Account not found for account number: " << accountNumber << endl;
+                }
+                break;
+            }
+
             case 0:
                 cout << "Exiting program...\n";
                 break;
