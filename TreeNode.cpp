@@ -237,20 +237,13 @@ void TreeNode::updateBalance(NodePtr root, Transaction &t) {
     vector<NodePtr> parents = getParentNodes(root);
 
     // Update the current account's balance first
-    if (t.getDebitCredit() == 'D') {
-        account->setBalance(account->getBalance() + t.getAmount());
-    } else if (t.getDebitCredit() == 'C') {
-        account->setBalance(account->getBalance() - t.getAmount());
-    }
+    account->updateBalance(t);
+
 
     // Update all parent balances from bottom to top
     for (NodePtr parent: parents) {
         if (parent && parent->account) {
-            if (t.getDebitCredit() == 'D') {
-                parent->account->setBalance(parent->account->getBalance() + t.getAmount());
-            } else if (t.getDebitCredit() == 'C') {
-                parent->account->setBalance(parent->account->getBalance() - t.getAmount());
-            }
+            parent->account->updateBalance(t);
         }
     }
 }

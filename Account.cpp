@@ -81,17 +81,11 @@ void Account::setTransaction(int index, const Transaction &t) {
 
 void Account::addTransaction(const Transaction &t) {
     transactions.push_back(t);
-//    updateBalance(t);
 }
 
 void Account::removeTransaction(int index) {
     if (index >= 0 && index < transactions.size()) {
         Transaction t = transactions[index];
-//        if (t.getDebitCredit() == 'D') {
-//            balance -= t.getAmount();
-//        } else {
-//            balance += t.getAmount();
-//        }
         transactions.erase(transactions.begin() + index);
     }
 }
