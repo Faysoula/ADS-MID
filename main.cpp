@@ -28,13 +28,18 @@ void ensure_reports_directory() {
     // If directory already exists, -1 is returned but that's okay
 }
 
+string getProjectPath() {
+    string userProfile = getenv("USERPROFILE"); // Gets C:\Users\User
+    return userProfile + "\\CLionProjects\\ADS-MID\\accountswithspace.txt";
+}
+
 int main() {
     ForestTree tree;
 
     ensure_reports_directory();
 
     // Build chart of accounts from a file
-    tree.buildFromFile("C:/Users/AMOEBA/CLionProjects/ADS-MID5/accountswithspace.txt");
+    tree.buildFromFile(getProjectPath());
 
     int choice;
     do {
@@ -142,7 +147,7 @@ int main() {
 
                 NodePtr accountNode = tree.findAccount(accountNumber);
                 if (accountNode) {
-                    const Account& account = accountNode->getData();
+                    const Account &account = accountNode->getData();
                     cout << "\nAccount Found:" << endl;
                     cout << "Account Number: " << account.getAccountNumber() << endl;
                     cout << "Description: " << account.getDescription() << endl;
