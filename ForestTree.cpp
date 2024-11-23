@@ -226,7 +226,7 @@ bool ForestTree::addTransaction(int accountNumber, Transaction& transaction) {
     }
 
     if (!accountNode) {
-        cerr << "Error: Account not found for account number: " << accountNumber << endl;
+        cout << "Error: Account not found for account number: " << accountNumber << endl;
         return false;
     }
 
@@ -269,7 +269,7 @@ bool ForestTree::deleteTransaction(int accountNumber, int transactionIndex) {
     }
 
     if (!accountNode) {
-        cerr << "Error: Account not found for account number: " << accountNumber << endl;
+        cout << "Error: Account not found for account number: " << accountNumber << endl;
         return false;
     }
 
@@ -278,7 +278,7 @@ bool ForestTree::deleteTransaction(int accountNumber, int transactionIndex) {
 
     // Validate transaction index
     if (transactionIndex < 0 || transactionIndex >= transactions.size()) {
-        cerr << "Error: Invalid transaction index. Please enter a number between 0 and "
+        cout << "Error: Invalid transaction index. Please enter a number between 0 and "
              << transactions.size() - 1 << endl;
         return false;
     }

@@ -71,7 +71,7 @@ int main() {
                     cout << "\nTransaction applied successfully." << endl;
                     cout << "-----------------------------------";
                 } else {
-                    cerr << "\nFailed to apply transaction. Ensure the account exists." << endl;
+                    cout << "Failed to apply transaction." << endl;
                     cout << "-----------------------------------";
                 }
                 break;
