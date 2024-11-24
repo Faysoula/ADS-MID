@@ -10,6 +10,7 @@
 #include <string>
 #include <iomanip>
 #include <stdexcept>
+#include <queue>
 
 using namespace std;
 
@@ -35,7 +36,7 @@ void ForestTree::initialize() {
 }
 
 // Function to build a chart of accounts from a file
-void ForestTree::buildFromFile(const string& filename) {
+void ForestTree::buildFromFile(const string &filename) {
     ifstream file(filename);
     if (!file.is_open()) {
         cerr << "Error opening file: " << filename << endl;
@@ -60,12 +61,12 @@ void ForestTree::buildFromFile(const string& filename) {
             // Calculate parent number based on account number string
             string accStr = to_string(newAccount.getAccountNumber());
             int parentNumber = accStr.length() > 1 ?
-                             stoi(accStr.substr(0, accStr.length() - 1)) : -1;
+                               stoi(accStr.substr(0, accStr.length() - 1)) : -1;
 
             // Add account to tree
             addAccount(newAccount, parentNumber);
 
-        } catch (const exception& e) {
+        } catch (const exception &e) {
             cerr << "Error processing line: " << line << endl;
             cerr << "Error details: " << e.what() << endl;
             continue;  // Skip this line and continue with the next one
@@ -74,6 +75,7 @@ void ForestTree::buildFromFile(const string& filename) {
 
     file.close();
     cout << "Chart of accounts built from file successfully." << endl;
+    loadTransactions(getTransactionFilename(filename));
 }
 
 void ForestTree::printDetailedReport(int accountNumber, const string &filename) const {
@@ -118,7 +120,7 @@ void ForestTree::printForestTree() const {
     }
 
     cout << "\nChart of Accounts:\n==================\n";
-    for (NodePtr root : rootAccounts) {
+    for (NodePtr root: rootAccounts) {
         if (root) {
             printTreeHelper(root, 0);
         }
@@ -159,7 +161,7 @@ void ForestTree::printTreeHelper(NodePtr node, int level) const {
     printTreeHelper(node->getRightSibling(), level);
 }
 
-bool ForestTree::addAccount(const Account& newAccount, int parentNumber) {
+bool ForestTree::addAccount(const Account &newAccount, int parentNumber) {
     int accNum = newAccount.getAccountNumber();
 
     // Handle root accounts (single digit)
@@ -205,7 +207,7 @@ bool ForestTree::addAccount(const Account& newAccount, int parentNumber) {
     return success;
 }
 
-bool ForestTree::addTransaction(int accountNumber, Transaction& transaction) {
+bool ForestTree::addTransaction(int accountNumber, Transaction &transaction) {
     // Find the account node and its root
     NodePtr accountNode = nullptr;
     NodePtr rootNode = nullptr;
@@ -242,6 +244,13 @@ bool ForestTree::addTransaction(int accountNumber, Transaction& transaction) {
                 break;
             }
         }
+
+        try {
+            saveTransactions(getTransactionFilename("accountswithspace.txt"));
+        } catch (const exception &e) {
+            cerr << "Warning: Failed to save transactions: " << e.what() << endl;
+        }
+
         return true;
     } catch (const exception &e) {
         cerr << "Error: " << e.what() << endl;
@@ -306,9 +315,180 @@ bool ForestTree::deleteTransaction(int accountNumber, int transactionIndex) {
             }
         }
 
+        try {
+            saveTransactions(getTransactionFilename("accountswithspace.txt"));
+        } catch (const exception &e) {
+            cerr << "Warning: Failed to save transactions: " << e.what() << endl;
+        }
+
+        return true;
+
         return true;
     } catch (const exception &e) {
         cerr << "Error while deleting transaction: " << e.what() << endl;
         return false;
     }
+}
+
+void ForestTree::saveToFile(const string &filename) const {
+    // First, read all lines from the file into memory
+    ifstream inFile(filename);
+    if (!inFile) {
+        throw runtime_error("Unable to open file for reading: " + filename);
+    }
+
+    vector<string> lines;
+    string line;
+
+    while (getline(inFile, line)) {
+        lines.push_back(line);
+    }
+    inFile.close();
+
+    // Update balances in the lines
+    for (auto &line: lines) {
+        istringstream iss(line);
+        int accountNum;
+        string description;
+
+        if (!(iss >> accountNum)) {
+            continue; // Skip invalid lines
+        }
+
+        // Find this account in our tree
+        NodePtr accountNode = findAccount(accountNum);
+        if (!accountNode) {
+            continue; // Account not found, keep original line
+        }
+
+        // Read until the last number (current balance)
+        string word;
+        vector<string> words;
+        while (iss >> word) {
+            words.push_back(word);
+        }
+
+        if (!words.empty()) {
+            // Remove the last word (old balance)
+            words.pop_back();
+
+            // Create new line with updated balance
+            ostringstream newLine;
+            newLine << accountNum;
+            for (const auto &w: words) {
+                newLine << " " << w;
+            }
+            newLine << " " << fixed << setprecision(2) << accountNode->getData().getBalance();
+
+            line = newLine.str();
+        }
+    }
+
+    // Write updated content back to file
+    ofstream outFile(filename);
+    if (!outFile) {
+        throw runtime_error("Unable to open file for writing: " + filename);
+    }
+
+    for (const auto &line: lines) {
+        outFile << line << endl;
+    }
+}
+
+void ForestTree::saveTransactions(const string &filename) const {
+    ofstream file(filename);
+    if (!file) {
+        throw runtime_error("Unable to open transaction file for writing: " + filename);
+    }
+
+    // For each account in the tree
+    for (NodePtr root: rootAccounts) {
+        if (!root) continue;
+
+        // Use a queue to traverse all nodes
+        queue<NodePtr> nodeQueue;
+        nodeQueue.push(root);
+
+        while (!nodeQueue.empty()) {
+            NodePtr current = nodeQueue.front();
+            nodeQueue.pop();
+
+            // Save transactions for current account
+            const Account &account = current->getData();
+            const vector<Transaction> &transactions = account.getTransactions();
+
+            for (const Transaction &t: transactions) {
+                file << account.getAccountNumber() << "|"
+                     << t.getTransactionID() << "|"
+                     << t.getAmount() << "|"
+                     << t.getDebitCredit() << "|"
+                     << t.getDate() << "|"
+                     << t.getDescription() << endl;
+            }
+
+            // Add child and sibling to queue
+            if (current->getLeftChild()) nodeQueue.push(current->getLeftChild());
+            if (current->getRightSibling()) nodeQueue.push(current->getRightSibling());
+        }
+    }
+    file.close();
+}
+
+void ForestTree::loadTransactions(const string &filename) {
+    ifstream file(filename);
+    if (!file) {
+        return; // It's okay if the file doesn't exist yet
+    }
+
+    string line;
+    while (getline(file, line)) {
+        istringstream iss(line);
+        string field;
+        vector<string> fields;
+
+        // Split line by '|'
+        while (getline(iss, field, '|')) {
+            fields.push_back(field);
+        }
+
+        if (fields.size() < 6) continue; // Skip invalid lines
+
+        try {
+            int accountNum = stoi(fields[0]);
+            NodePtr accountNode = findAccount(accountNum);
+            if (!accountNode) continue;
+
+            // Create and add transaction
+            Transaction t(fields[1],                    // ID
+                          stod(fields[2]),               // Amount
+                          fields[3][0],                  // Debit/Credit
+                          fields[5],                     // Description
+                          fields[4]);                    // Date
+
+            // Add transaction without updating file
+            accountNode->getData().addTransaction(t);
+            accountNode->updateBalance(findRootForAccount(accountNum), t);
+
+        } catch (const exception &e) {
+            cerr << "Error loading transaction: " << e.what() << endl;
+            continue;
+        }
+    }
+    file.close();
+}
+
+// Helper function to find root node for an account
+NodePtr ForestTree::findRootForAccount(int accountNumber) const {
+    string accStr = to_string(accountNumber);
+    char firstDigit = accStr[0];
+    for (NodePtr root: rootAccounts) {
+        if (root && to_string(root->getData().getAccountNumber())[0] == firstDigit) {
+            return root;
+        }
+    }
+    return nullptr;
+}
+
+string ForestTree::getTransactionFilename(const string &accountsFile) const {
+    return accountsFile.substr(0, accountsFile.find_last_of('.')) + "_transactions.txt";
 }

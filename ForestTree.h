@@ -29,8 +29,7 @@ public:
 
     void buildFromFile(const string &filename);
 
-    //needs fixing with tree node add acount maybe use inorder to add
-    bool addAccount(const Account& newAccount, int parentNumber);
+    bool addAccount(const Account &newAccount, int parentNumber);
 
     bool addTransaction(int accountNumber, Transaction &transaction);
 
@@ -42,9 +41,20 @@ public:
 
     NodePtr findAccount(int accountNumber) const;
 
+    void saveToFile(const string &filename) const;
+
+    void saveTransactions(const string &filename) const;
+
+    void loadTransactions(const string &filename);
+
+    string getTransactionFilename(const string &accountsFile) const;
+
 private:
     // Helper function to recursively print tree nodes
     void printTreeHelper(NodePtr node, int level) const;
+
+
+    NodePtr findRootForAccount(int accountNumber) const;
 };
 
 #endif // FORESTTREE_H

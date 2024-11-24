@@ -74,12 +74,18 @@ int main() {
                 cin >> newTransaction;  // This will prompt for all transaction details
 
                 if (tree.addTransaction(accountNumber, newTransaction)) {
-                    cout << "\nTransaction applied successfully." << endl;
-                    cout << "-----------------------------------";
+                    // Save changes to file after successful transaction
+                    try {
+                        tree.saveToFile(getProjectPath());
+                        tree.saveTransactions(tree.getTransactionFilename(getProjectPath()));
+                        cout << "\nTransaction applied and saved successfully." << endl;
+                    } catch (const exception &e) {
+                        cerr << "Transaction applied but failed to save: " << e.what() << endl;
+                    }
                 } else {
                     cout << "Failed to apply transaction." << endl;
-                    cout << "-----------------------------------";
                 }
+                cout << "-----------------------------------";
                 break;
             }
             case 3: {
@@ -106,7 +112,6 @@ int main() {
                 cout << "Enter account number: ";
                 cin >> accountNumber;
 
-                // First display all transactions for this account
                 NodePtr accountNode = tree.findAccount(accountNumber);
                 if (accountNode) {
                     const vector<Transaction> &transactions = accountNode->getData().getTransactions();
@@ -126,7 +131,14 @@ int main() {
                     cin >> transactionIndex;
 
                     if (tree.deleteTransaction(accountNumber, transactionIndex)) {
-                        cout << "Transaction deleted successfully.\n";
+                        // Save changes to file after successful deletion
+                        try {
+                            tree.saveToFile(getProjectPath());
+                            tree.saveTransactions(tree.getTransactionFilename(getProjectPath()));
+                            cout << "Transaction deleted and changes saved successfully.\n";
+                        } catch (const exception &e) {
+                            cerr << "Transaction deleted but failed to save changes: " << e.what() << endl;
+                        }
                     } else {
                         cout << "Failed to delete transaction.\n";
                     }
