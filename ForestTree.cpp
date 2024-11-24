@@ -29,6 +29,7 @@ ForestTree::ForestTree() {}
 ForestTree::~ForestTree() {
     cleanupTree();
 }
+
 /**
  * @brief Helper function to recursively delete all nodes in the tree.
  * Cleans up all dynamically allocated memory for the tree nodes.
@@ -103,6 +104,7 @@ void ForestTree::buildFromFile(const string &filename) {
     cout << "Chart of accounts built from file successfully." << endl;
     loadTransactions(getTransactionFilename(filename));
 }
+
 /**
  * @brief Prints a detailed report of an account and its transaction history to a file.
  *
@@ -148,6 +150,7 @@ void ForestTree::printDetailedReport(int accountNumber, const string &filename) 
 
     file.close();
 }
+
 /**
  * @brief Prints the entire chart of accounts (the forest tree) to the console.
  * This method traverses the tree and prints each account and its children.
@@ -169,6 +172,7 @@ void ForestTree::printForestTree() const {
     }
     cout << "==================\n";
 }
+
 /**
  * @brief Finds an account by its account number.
  *
@@ -222,6 +226,7 @@ void ForestTree::printTreeHelper(NodePtr node, int level) const {
     // Recur for sibling nodes
     printTreeHelper(node->getRightSibling(), level);
 }
+
 /**
  * @brief Adds a new account to the tree structure.
  *
@@ -280,6 +285,7 @@ bool ForestTree::addAccount(const Account &newAccount, int parentNumber) {
 
     return success;
 }
+
 /**
  * @brief Adds a transaction to an account's transaction history.
  *
@@ -341,6 +347,7 @@ bool ForestTree::addTransaction(int accountNumber, Transaction &transaction) {
         return false;
     }
 }
+
 /**
  * @brief Deletes a transaction from an account's transaction history.
  *
@@ -423,6 +430,7 @@ bool ForestTree::deleteTransaction(int accountNumber, int transactionIndex) {
         return false;
     }
 }
+
 /**
  * @brief Saves the current state of the tree to a file, updating account balances.
  *
@@ -499,6 +507,7 @@ void ForestTree::saveToFile(const string &filename) const {
         outFile << line << endl;
     }
 }
+
 /**
  * @brief Saves all transactions from the tree to a file.
  *
@@ -549,6 +558,7 @@ void ForestTree::saveTransactions(const string &filename) const {
     }
     file.close();
 }
+
 /**
  * @brief Loads transactions from a file into the tree structure.
  *
@@ -627,6 +637,7 @@ NodePtr ForestTree::findRootForAccount(int accountNumber) const {
     }
     return nullptr;
 }
+
 /**
  * @brief Generates a transaction filename based on the provided accounts file name.
  *
@@ -640,4 +651,132 @@ NodePtr ForestTree::findRootForAccount(int accountNumber) const {
  */
 string ForestTree::getTransactionFilename(const string &accountsFile) const {
     return accountsFile.substr(0, accountsFile.find_last_of('.')) + "_transactions.txt";
+}
+
+bool ForestTree::addAccountWithFile(int accountNumber, const string &description, double balance, string path) {
+    Account newAccount;
+    newAccount.setAccountNumber(accountNumber);
+    newAccount.setDescription(description);
+    newAccount.setBalance(balance);
+
+    // Automatically determine parent account based on account number
+    string accStr = to_string(accountNumber);
+    int parentNumber = accStr.length() > 1 ? stoi(accStr.substr(0, accStr.length() - 1)) : -1;
+
+    if (!addAccount(newAccount, parentNumber)) {
+        return false;
+    }
+
+    // Create a transaction to update balances through the hierarchy
+    if (balance != 0) {
+        Transaction t("INIT", abs(balance), balance >= 0 ? 'D' : 'C', "Initial balance");
+        addTransaction(accountNumber, t);
+    }
+
+    // Read all lines from the file
+    vector<string> lines;
+    string line;
+    ifstream inFile(path);
+    if (!inFile) {
+        cerr << "Error opening file for reading" << endl;
+        return false;
+    }
+
+    while (getline(inFile, line)) {
+        lines.push_back(line);
+    }
+    inFile.close();
+
+    // Find the correct position to insert the new account
+    vector<string>::iterator insertPos = lines.end();
+    string accNumStr = to_string(accountNumber);
+    string parentStr = accStr.length() > 1 ? accStr.substr(0, accStr.length() - 1) : "";
+
+    // First, find the parent's position
+    vector<string>::iterator parentPos = lines.begin();
+    for (; parentPos != lines.end(); ++parentPos) {
+        istringstream iss(*parentPos);
+        int currentAccNum;
+        if (iss >> currentAccNum && currentAccNum == parentNumber) {
+            break;
+        }
+    }
+
+    // If we found the parent, start searching from there
+    if (parentPos != lines.end()) {
+        insertPos = parentPos + 1;
+        for (; insertPos != lines.end(); ++insertPos) {
+            istringstream iss(*insertPos);
+            int currentAccNum;
+            if (iss >> currentAccNum) {
+                string currStr = to_string(currentAccNum);
+                if (currStr.length() > parentStr.length() &&
+                    currStr.substr(0, parentStr.length()) == parentStr) {
+                    if (currStr.length() == accNumStr.length() &&
+                        currentAccNum > accountNumber) {
+                        break;
+                    }
+                } else if (currStr.length() <= parentStr.length() ||
+                           currStr.substr(0, parentStr.length()) != parentStr) {
+                    break;
+                }
+            }
+        }
+    } else {
+        for (insertPos = lines.begin(); insertPos != lines.end(); ++insertPos) {
+            istringstream iss(*insertPos);
+            int currentAccNum;
+            if (iss >> currentAccNum) {
+                string currStr = to_string(currentAccNum);
+                if (currStr[0] > accNumStr[0] ||
+                    (currStr[0] == accNumStr[0] && currentAccNum > accountNumber)) {
+                    break;
+                }
+            }
+        }
+    }
+
+    // Update all balances in the lines based on the tree's current state
+    for (auto &line: lines) {
+        istringstream iss(line);
+        int lineAccNum;
+        if (iss >> lineAccNum) {
+            NodePtr accNode = findAccount(lineAccNum);
+            if (accNode) {
+                string word;
+                vector<string> words;
+                while (iss >> word) {
+                    words.push_back(word);
+                }
+                if (!words.empty()) {
+                    words.pop_back(); // Remove old balance
+                    ostringstream newLine;
+                    newLine << lineAccNum;
+                    for (const auto &w: words) {
+                        newLine << " " << w;
+                    }
+                    newLine << " " << fixed << setprecision(2) << accNode->getData().getBalance();
+                    line = newLine.str();
+                }
+            }
+        }
+    }
+
+    // Create and insert the new line
+    ostringstream newLine;
+    newLine << accountNumber << " " << description << " " << fixed << setprecision(2) << balance;
+    lines.insert(insertPos, newLine.str());
+
+    // Write all lines back to the file
+    ofstream outFile(path);
+    if (!outFile) {
+        cerr << "Error opening file for writing" << endl;
+        return false;
+    }
+
+    for (const string &l: lines) {
+        outFile << l << endl;
+    }
+    outFile.close();
+    return true;
 }

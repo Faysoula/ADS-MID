@@ -3,6 +3,7 @@
 #include <filesystem>
 #include "ForestTree.h"
 #include <direct.h>
+#include <fstream>
 
 using namespace std;
 
@@ -48,19 +49,45 @@ int main() {
 
         switch (choice) {
             case 1: {
-                Account newAccount;
-                int parentNumber;
+                int accountNumber;
+                string description;
+                double balance;
 
-                cout << "Enter account details (number description balance):\n";
-                cin >> newAccount;
+                // Get account number
+                while (true) {
+                    cout << "Enter account number: ";
+                    if (cin >> accountNumber && accountNumber > 0) {
+                        break;
+                    }
+                    cout << "Invalid account number. Please enter a positive number.\n";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
 
-                cout << "Enter parent account number (-1 for root account): ";
-                cin >> parentNumber;
+                // Clear buffer before reading description
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                if (tree.addAccount(newAccount, parentNumber)) {
-                    cout << "\nAccount added successfully." << endl;
+                // Get description
+                cout << "Enter account description: ";
+                getline(cin, description);
+
+                // Get balance
+                while (true) {
+                    cout << "Enter initial balance: ";
+                    if (cin >> balance) {
+                        break;
+                    }
+                    cout << "Invalid balance. Please enter a valid number.\n";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+
+                if (tree.addAccountWithFile(accountNumber, description, balance, getProjectPath())) {
+                    cout << "\nAccount added and saved successfully." << endl;
                 } else {
-                    cout << "\nFailed to add account. Ensure the account number is unique and parent exists." << endl;
+                    cout
+                            << "\nFailed to add account. Ensure the account number is unique and follows the chart of accounts structure."
+                            << endl;
                 }
                 break;
             }

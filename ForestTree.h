@@ -201,6 +201,16 @@ public:
      */
     string getTransactionFilename(const string &accountsFile) const;
 
+    /**
+     * @brief Adds a new account to both the tree structure and the file.
+     *
+     * @param accountNumber The account number
+     * @param description The account description
+     * @param balance The initial balance
+     * @return bool Returns true if the account was successfully added, false otherwise
+     */
+    bool addAccountWithFile(int accountNumber, const string &description, double balance, string path);
+
 private:
     /**
      * @brief Helper function to recursively print tree nodes.
