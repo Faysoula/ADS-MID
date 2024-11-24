@@ -15,13 +15,24 @@
 using namespace std;
 
 // Constructor
+/**
+ * @brief Default constructor for the ForestTree class.
+ * Initializes the tree but does not allocate any nodes.
+ */
 ForestTree::ForestTree() {}
 
 // Destructor
+/**
+ * @brief Destructor for the ForestTree class.
+ * Deletes all nodes in the tree and clears the root accounts.
+ */
 ForestTree::~ForestTree() {
     cleanupTree();
 }
-
+/**
+ * @brief Helper function to recursively delete all nodes in the tree.
+ * Cleans up all dynamically allocated memory for the tree nodes.
+ */
 void ForestTree::cleanupTree() {
     for (NodePtr root: rootAccounts) {
         delete root;
@@ -29,13 +40,28 @@ void ForestTree::cleanupTree() {
     rootAccounts.clear();
 }
 
-// Function to initialize an empty forest tree
+/**
+ * @brief Initializes an empty forest tree by cleaning up any existing tree.
+ * This method ensures the tree is empty before any new operations are performed.
+ *
+ * @details After calling this function, the tree will be reinitialized with no accounts.
+ */
 void ForestTree::initialize() {
     cleanupTree();
     cout << "Forest tree initialized successfully." << endl;
 }
 
-// Function to build a chart of accounts from a file
+/**
+ * @brief Builds a chart of accounts from a specified file.
+ * The file should contain account details, one per line. Each line is parsed, and accounts are added to the tree.
+ * If an account's parent is not found, it is treated as a root account.
+ *
+ * @param filename The name of the file containing the chart of accounts data.
+ *
+ * @details The file is expected to contain account information in a specific format. Each line should represent one account, with details such as account number and name.
+ * Accounts are parsed using the `Account` class's extraction operator (operator>>), and are added to the tree structure.
+ * In case of errors during file processing, the method catches exceptions and continues with the next line.
+ */
 void ForestTree::buildFromFile(const string &filename) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -77,7 +103,17 @@ void ForestTree::buildFromFile(const string &filename) {
     cout << "Chart of accounts built from file successfully." << endl;
     loadTransactions(getTransactionFilename(filename));
 }
-
+/**
+ * @brief Prints a detailed report of an account and its transaction history to a file.
+ *
+ * @param accountNumber The account number to generate the report for.
+ * @param filename The name of the file where the report should be saved.
+ *
+ * @throws runtime_error If the file cannot be opened for writing.
+ *
+ * @details The report includes account details and all transactions associated with the account.
+ * If no transactions are found, a message indicating no transactions will be written.
+ */
 void ForestTree::printDetailedReport(int accountNumber, const string &filename) const {
     ofstream file(filename);
     if (!file.is_open()) {
@@ -112,7 +148,13 @@ void ForestTree::printDetailedReport(int accountNumber, const string &filename) 
 
     file.close();
 }
-
+/**
+ * @brief Prints the entire chart of accounts (the forest tree) to the console.
+ * This method traverses the tree and prints each account and its children.
+ *
+ * @details Each account is printed in a hierarchical format, with indentation to represent the tree structure.
+ * If the tree is empty, a message indicating that will be printed instead.
+ */
 void ForestTree::printForestTree() const {
     if (rootAccounts.empty()) {
         cout << "Tree is empty." << endl;
@@ -127,7 +169,16 @@ void ForestTree::printForestTree() const {
     }
     cout << "==================\n";
 }
-
+/**
+ * @brief Finds an account by its account number.
+ *
+ * @param accountNumber The account number to search for.
+ *
+ * @return NodePtr A pointer to the node containing the account if found, or nullptr if not found.
+ *
+ * @details This method traverses the forest tree and searches for the account with the specified account number.
+ * If the account is not found, nullptr is returned.
+ */
 NodePtr ForestTree::findAccount(int accountNumber) const {
     for (NodePtr root: rootAccounts) {
         if (root) {
@@ -138,7 +189,18 @@ NodePtr ForestTree::findAccount(int accountNumber) const {
     return nullptr;
 }
 
-// Helper function to print tree nodes recursively
+/**
+ * @brief Recursively prints the tree structure starting from a given node.
+ *
+ * @param node A pointer to the node to start printing from.
+ * @param level The current level of indentation for the node being printed.
+ *
+ * @return void
+ *
+ * @details This helper function prints the details of each node in the tree recursively. The output includes
+ * the account number, description, and balance. The level parameter is used to determine the indentation
+ * for each node based on its depth in the tree.
+ */
 void ForestTree::printTreeHelper(NodePtr node, int level) const {
     if (!node || !node->getData().getAccountNumber()) {
         return;
@@ -160,7 +222,19 @@ void ForestTree::printTreeHelper(NodePtr node, int level) const {
     // Recur for sibling nodes
     printTreeHelper(node->getRightSibling(), level);
 }
-
+/**
+ * @brief Adds a new account to the tree structure.
+ *
+ * @param newAccount The new account to be added.
+ * @param parentNumber The account number of the parent to which the new account should be added.
+ * If -1, the account is added as a root account.
+ *
+ * @return bool Returns true if the account was successfully added, false if it already exists or the parent is not found.
+ *
+ * @details This method adds an account to the tree. If the parent account is provided, the new account will be added
+ * under the parent. If no parent is provided, the account is added as a root account. The method checks if the account
+ * already exists before adding it, and if the parent is not found, it will search for an ancestor to add the account to.
+ */
 bool ForestTree::addAccount(const Account &newAccount, int parentNumber) {
     int accNum = newAccount.getAccountNumber();
 
@@ -206,7 +280,17 @@ bool ForestTree::addAccount(const Account &newAccount, int parentNumber) {
 
     return success;
 }
-
+/**
+ * @brief Adds a transaction to an account's transaction history.
+ *
+ * @param accountNumber The account number to which the transaction will be added.
+ * @param transaction The transaction to be added to the account.
+ *
+ * @return bool Returns true if the transaction was successfully added, false if the account is not found or an error occurs.
+ *
+ * @details This method adds a transaction to the specified account's history and updates the account balance accordingly.
+ * If the transaction is successfully added, the method attempts to save the transaction history to a file.
+ */
 bool ForestTree::addTransaction(int accountNumber, Transaction &transaction) {
     // Find the account node and its root
     NodePtr accountNode = nullptr;
@@ -257,7 +341,17 @@ bool ForestTree::addTransaction(int accountNumber, Transaction &transaction) {
         return false;
     }
 }
-
+/**
+ * @brief Deletes a transaction from an account's transaction history.
+ *
+ * @param accountNumber The account number from which the transaction will be deleted.
+ * @param transactionIndex The index of the transaction to delete.
+ *
+ * @return bool Returns true if the transaction was successfully deleted, false if the account or transaction is not found or an error occurs.
+ *
+ * @details This method removes a transaction from the specified account's history and updates the account balance accordingly.
+ * If the transaction is successfully deleted, the method attempts to save the updated transaction history to a file.
+ */
 bool ForestTree::deleteTransaction(int accountNumber, int transactionIndex) {
     // Find the account node and its root
     NodePtr accountNode = nullptr;
@@ -329,7 +423,18 @@ bool ForestTree::deleteTransaction(int accountNumber, int transactionIndex) {
         return false;
     }
 }
-
+/**
+ * @brief Saves the current state of the tree to a file, updating account balances.
+ *
+ * @param filename The name of the file to which the tree data should be saved.
+ *
+ * @return void
+ *
+ * @details This method reads all lines from the specified file into memory, processes each line to update account balances,
+ * and then writes the updated data back to the file. Each account's balance is retrieved from the tree and updated in the file
+ * accordingly. If an account is found in the tree, the balance is updated; otherwise, the original line is retained.
+ * The method handles file reading, line processing, and file writing in a structured manner.
+ */
 void ForestTree::saveToFile(const string &filename) const {
     // First, read all lines from the file into memory
     ifstream inFile(filename);
@@ -394,7 +499,18 @@ void ForestTree::saveToFile(const string &filename) const {
         outFile << line << endl;
     }
 }
-
+/**
+ * @brief Saves all transactions from the tree to a file.
+ *
+ * @param filename The name of the file to which the transaction data should be saved.
+ *
+ * @return void
+ *
+ * @details This method traverses the entire tree, saving all transactions for each account to the specified file.
+ * Each transaction is saved in the format: account number, transaction ID, amount, debit/credit, date, and description.
+ * The method uses a queue to traverse the tree level by level, ensuring that all accounts and their respective transactions
+ * are processed and saved.
+ */
 void ForestTree::saveTransactions(const string &filename) const {
     ofstream file(filename);
     if (!file) {
@@ -433,7 +549,19 @@ void ForestTree::saveTransactions(const string &filename) const {
     }
     file.close();
 }
-
+/**
+ * @brief Loads transactions from a file into the tree structure.
+ *
+ * @param filename The name of the file from which transaction data should be loaded.
+ *
+ * @return void
+ *
+ * @details This method reads each transaction from the specified file and attempts to add it to the corresponding account in
+ * the tree. Each line in the file is expected to contain transaction data in the format: account number, transaction ID,
+ * amount, debit/credit, date, and description. If the account number exists in the tree, the transaction is added to that account.
+ * If the account cannot be found, the transaction is skipped. The method handles file reading and transaction parsing,
+ * with error handling for invalid lines.
+ */
 void ForestTree::loadTransactions(const string &filename) {
     ifstream file(filename);
     if (!file) {
@@ -477,7 +605,18 @@ void ForestTree::loadTransactions(const string &filename) {
     file.close();
 }
 
-// Helper function to find root node for an account
+/**
+ * @brief Finds the root node for an account based on the first digit of the account number.
+ *
+ * @param accountNumber The account number for which the root node is to be found.
+ *
+ * @return NodePtr A pointer to the root node of the account if found, or nullptr if not found.
+ *
+ * @details This method attempts to find the root node of the account by comparing the first digit of the account number
+ * with the first digit of the account numbers of all root accounts in the tree. If a match is found, the corresponding root node
+ * is returned. If no match is found, nullptr is returned. This method assumes that accounts with the same first digit are
+ * grouped together in the forest structure.
+ */
 NodePtr ForestTree::findRootForAccount(int accountNumber) const {
     string accStr = to_string(accountNumber);
     char firstDigit = accStr[0];
@@ -488,7 +627,17 @@ NodePtr ForestTree::findRootForAccount(int accountNumber) const {
     }
     return nullptr;
 }
-
+/**
+ * @brief Generates a transaction filename based on the provided accounts file name.
+ *
+ * @param accountsFile The name of the accounts file.
+ *
+ * @return string The generated transaction file name, which appends "_transactions.txt" to the accounts file name.
+ *
+ * @details This method takes the provided accounts file name and creates a corresponding transaction file name by
+ * removing the file extension and appending "_transactions.txt". This helps to link the transaction file with the
+ * respective accounts file in a consistent manner.
+ */
 string ForestTree::getTransactionFilename(const string &accountsFile) const {
     return accountsFile.substr(0, accountsFile.find_last_of('.')) + "_transactions.txt";
 }
