@@ -119,7 +119,12 @@ string Transaction::getDescription() const {
  * @param id The new transaction ID
  */
 void Transaction::setTransactionID(const string &id) {
-    transactionID = id;
+    if (id.empty()) {
+        time_t now = time(nullptr);
+        transactionID = "FMR" + to_string(now);
+    } else {
+        transactionID = id;
+    }
 }
 
 /**
@@ -248,12 +253,13 @@ ostream &operator<<(ostream &os, const Transaction &transaction) {
  * @return The input stream
  */
 istream &operator>>(istream &is, Transaction &transaction) {
-    string transactionID, description;
+    string description;
     double amount;
     char debitCredit;
 
-    cout << "Enter Transaction ID: ";
-    is >> transactionID;
+    transaction.setTransactionID("");
+
+
     cout << "Enter Amount: ";
     is >> amount;
     cout << "Enter Type (D/C): ";
@@ -262,7 +268,6 @@ istream &operator>>(istream &is, Transaction &transaction) {
     is.ignore();
     getline(is, description);
 
-    transaction.setTransactionID(transactionID);
     transaction.setAmount(amount);
     transaction.setDebitCredit(debitCredit);
     transaction.setDate("");//autoset current date

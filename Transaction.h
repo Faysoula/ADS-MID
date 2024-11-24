@@ -49,7 +49,7 @@ public:
      * @param desc The description of the transaction (optional, default is empty string)
      * @param dateStr The date of the transaction (optional, default is empty string)
      */
-    Transaction(const string& id, double amt, char type, const string& desc = "", const string& dateStr = "");
+    Transaction(const string &id, double amt, char type, const string &desc = "", const string &dateStr = "");
 
     // Getters
 
@@ -95,7 +95,7 @@ public:
      *
      * @param id The transaction ID to set
      */
-    void setTransactionID(const string& id);
+    void setTransactionID(const string &id);
 
     /**
      * @brief Sets the transaction amount.
@@ -116,14 +116,14 @@ public:
      *
      * @param dateStr The date to set
      */
-    void setDate(const string& dateStr);
+    void setDate(const string &dateStr);
 
     /**
      * @brief Sets the description of the transaction.
      *
      * @param desc The description to set
      */
-    void setDescription(const string& desc);
+    void setDescription(const string &desc);
 
     // Validation
 
@@ -144,7 +144,7 @@ public:
      * @param balance The balance to apply the transaction to
      * @return True if the transaction was successfully applied, false otherwise
      */
-    bool applyToBalance(double& balance) const;
+    bool applyToBalance(double &balance) const;
 };
 
 // Operators
@@ -158,7 +158,7 @@ public:
  * @param transaction The transaction to output
  * @return The output stream
  */
-ostream& operator<<(ostream& os, const Transaction& transaction);
+ostream &operator<<(ostream &os, const Transaction &transaction);
 
 /**
  * @brief Input stream operator for Transaction class.
@@ -169,7 +169,7 @@ ostream& operator<<(ostream& os, const Transaction& transaction);
  * @param transaction The transaction to input data into
  * @return The input stream
  */
-istream& operator>>(istream& is, Transaction& transaction);
+istream &operator>>(istream &is, Transaction &transaction);
 
 #endif //ADS_MIDTERM_PROJECT_TRANSACTION_H
 
