@@ -4,6 +4,7 @@
 
 #include "Transaction.h"
 #include <iomanip>
+#include <ctime>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ using namespace std;
 Transaction::Transaction() : transactionID(""), amount(0.0), debitCredit('D'), date(""), description("") {}
 
 // Parameterized Constructor
-Transaction::Transaction(const string& id, double amt, char type, const string& desc, const string& dateStr) {
+Transaction::Transaction(const string &id, double amt, char type, const string &desc, const string &dateStr) {
 
     transactionID = id;
     date = dateStr;
@@ -35,28 +36,28 @@ Transaction::Transaction(const string& id, double amt, char type, const string& 
 
 // Getters
 string Transaction::getTransactionID() const {
-        return transactionID;
+    return transactionID;
 }
 
 double Transaction::getAmount() const {
-        return amount;
+    return amount;
 }
 
 char Transaction::getDebitCredit() const {
-        return debitCredit;
+    return debitCredit;
 }
 
 string Transaction::getDate() const {
-        return date;
+    return date;
 }
 
 string Transaction::getDescription() const {
-        return description;
+    return description;
 }
 
 // Setters
-void Transaction::setTransactionID(const string& id) {
-        transactionID = id;
+void Transaction::setTransactionID(const string &id) {
+    transactionID = id;
 }
 
 void Transaction::setAmount(double amt) {
@@ -69,20 +70,29 @@ void Transaction::setAmount(double amt) {
 }
 
 void Transaction::setDebitCredit(char type) {
-    if (type == 'D' || type == 'C') {
-        debitCredit = type;
+    char newType = toupper(type);
+
+    if (newType == 'D' || newType == 'C') {
+        debitCredit = newType;
     } else {
         cerr << "Invalid type. Defaulting to 'D' (Debit)." << endl;
         debitCredit = 'D';
     }
 }
 
-void Transaction::setDate(const string& dateStr) {
+void Transaction::setDate(const string &dateStr) {
+    if (dateStr.empty()) {
+        time_t now = time(nullptr);
+        char buffer[11];  // DD-MM-YY\0 needs 9 chars + safety
+        strftime(buffer, sizeof(buffer), "%d-%m-%y", localtime(&now));
+        date = buffer;
+    } else {
         date = dateStr;
+    }
 }
 
-void Transaction::setDescription(const string& desc) {
-        description = desc;
+void Transaction::setDescription(const string &desc) {
+    description = desc;
 }
 
 // Validation
@@ -91,7 +101,7 @@ bool Transaction::isValid() const {
 }
 
 // Apply Transaction to Balance
-bool Transaction::applyToBalance(double& balance) const {
+bool Transaction::applyToBalance(double &balance) const {
     if (!isValid()) {
         cerr << "Invalid transaction. Cannot apply." << endl;
         return false;
@@ -101,7 +111,7 @@ bool Transaction::applyToBalance(double& balance) const {
 }
 
 // Overloaded Output Stream Operator
-ostream& operator<<(ostream& os, const Transaction& transaction) {
+ostream &operator<<(ostream &os, const Transaction &transaction) {
     os << "Transaction ID: " << transaction.getTransactionID() << "\n"
        << "Amount: " << fixed << setprecision(2) << transaction.getAmount() << "\n"
        << "Type: " << (transaction.getDebitCredit() == 'D' ? "Debit" : "Credit") << "\n"
@@ -111,8 +121,8 @@ ostream& operator<<(ostream& os, const Transaction& transaction) {
 }
 
 // Overloaded Input Stream Operator
-istream& operator>>(istream& is, Transaction& transaction) {
-    string transactionID, date, description;
+istream &operator>>(istream &is, Transaction &transaction) {
+    string transactionID, description;
     double amount;
     char debitCredit;
 
@@ -122,16 +132,14 @@ istream& operator>>(istream& is, Transaction& transaction) {
     is >> amount;
     cout << "Enter Type (D/C): ";
     is >> debitCredit;
-    is.ignore();
-    cout << "Enter Date (YYYY-MM-DD): ";
-    getline(is, date);
     cout << "Enter Description: ";
+    is.ignore();
     getline(is, description);
 
     transaction.setTransactionID(transactionID);
     transaction.setAmount(amount);
     transaction.setDebitCredit(debitCredit);
-    transaction.setDate(date);
+    transaction.setDate("");//autoset current date
     transaction.setDescription(description);
 
     return is;
