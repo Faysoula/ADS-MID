@@ -91,12 +91,57 @@ int main() {
             case 3: {
                 int accountNumber;
                 string reportName;
-                cout << "Enter account number for report: ";
-                cin >> accountNumber;
+                bool validInput = false;
+
+                // Clear input buffer first
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                cout << "Enter report name (without extension): ";
-                getline(cin, reportName);
+                // Keep asking until valid input is received
+                while (!validInput) {
+                    cout << "Enter account number for report: ";
+                    string input;
+                    getline(cin, input);
+
+                    // Try to convert input to integer
+                    try {
+                        // Check if input contains any non-digit characters
+                        if (input.find_first_not_of("0123456789") != string::npos) {
+                            cout << "Error: Account number must be a positive integer.\n";
+                            continue;
+                        }
+
+                        accountNumber = stoi(input);
+                        if (accountNumber <= 0) {
+                            cout << "Error: Account number must be positive.\n";
+                            continue;
+                        }
+
+                        // If we get here, input is valid
+                        validInput = true;
+
+                    } catch (const invalid_argument &) {
+                        cout << "Error: Invalid account number format.\n";
+                        continue;
+                    } catch (const out_of_range &) {
+                        cout << "Error: Account number is too large.\n";
+                        continue;
+                    }
+                }
+
+                // Now get report name
+                bool validReportName = false;
+                while (!validReportName) {
+                    cout << "Enter report name (without extension): ";
+                    getline(cin, reportName);
+
+                    // Validate report name
+                    if (reportName.empty() || reportName.find_first_of("<>:\"/\\|?*") != string::npos) {
+                        cout << "Error: Invalid report name. Please avoid special characters.\n";
+                        continue;
+                    }
+
+                    validReportName = true;
+                }
 
                 string outputPath = "reports/" + reportName + ".txt";
                 try {

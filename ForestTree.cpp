@@ -467,7 +467,7 @@ void ForestTree::loadTransactions(const string &filename) {
 
             // Add transaction without updating file
             accountNode->getData().addTransaction(t);
-            accountNode->updateBalance(findRootForAccount(accountNum), t);
+            //accountNode->updateBalance(findRootForAccount(accountNum), t);
 
         } catch (const exception &e) {
             cerr << "Error loading transaction: " << e.what() << endl;
