@@ -665,7 +665,7 @@ bool ForestTree::addAccountWithFile(int accountNumber, const string &description
     Account newAccount;
     newAccount.setAccountNumber(accountNumber);
     newAccount.setDescription(description);
-    newAccount.setBalance(balance);
+    newAccount.setBalance(balance);  // Set initial balance directly
 
     // Automatically determine parent account based on account number
     string accStr = to_string(accountNumber);
@@ -675,10 +675,17 @@ bool ForestTree::addAccountWithFile(int accountNumber, const string &description
         return false;
     }
 
-    // Create a transaction to update balances through the hierarchy
-    if (balance != 0) {
-        Transaction t("INIT", abs(balance), balance >= 0 ? 'D' : 'C', "Initial balance");
-        addTransaction(accountNumber, t);
+    // If this account has an initial balance and is not a root account, update all ancestor balances
+    if (balance != 0 && parentNumber != -1) {
+        string currentNum = accStr;
+        while (currentNum.length() > 1) {
+            currentNum = currentNum.substr(0, currentNum.length() - 1);
+            int ancestorNum = stoi(currentNum);
+            NodePtr ancestorNode = findAccount(ancestorNum);
+            if (ancestorNode) {
+                ancestorNode->getData().setBalance(ancestorNode->getData().getBalance() + balance);
+            }
+        }
     }
 
     // Read all lines from the file
