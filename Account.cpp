@@ -28,6 +28,7 @@ using namespace std;
  * Initializes the account number to 0, description to an empty string, and balance to 0.0.
  */
 Account::Account() : accountNumber(0), description(""), balance(0.0) {}
+
 /**
  * @brief Parameterized constructor for the Account class.
  *
@@ -40,6 +41,7 @@ Account::Account(int num, const string &desc, double bal) {
     description = desc;
     balance = bal;
 }
+
 /**
  * @brief Copy constructor for the Account class.
  *
@@ -51,12 +53,14 @@ Account::Account(const Account &acc) {
     balance = acc.balance;
     transactions = acc.transactions;
 }
+
 /**
  * @brief Destructor for the Account class.
  *
  * Cleans up resources used by the Account object, if any.
  */
 Account::~Account() {}
+
 /**
  * @brief Retrieves the account number.
  *
@@ -108,6 +112,16 @@ Transaction Account::getTransaction(int index) const {
 }
 
 /**
+ * @brief Retrieves the account description.
+ *
+ * @return The account description.
+ */
+
+string Account::getDescription() const {
+    return description;
+}
+
+/**
  * @brief Sets the account number.
  *
  * @param num The new account number.
@@ -155,6 +169,7 @@ void Account::setTransaction(int index, const Transaction &t) {
         throw out_of_range("Transaction out of range :)");
     }
 }
+
 /**
  * @brief Adds a new transaction to the account.
  *
@@ -223,7 +238,7 @@ ostream &operator<<(ostream &os, const Account &account) {
     return os;
 }
 
-istream& operator>>(istream& is, Account& account) {
+istream &operator>>(istream &is, Account &account) {
     int accNum;
     is >> accNum;  // Read account number
     account.setAccountNumber(accNum);

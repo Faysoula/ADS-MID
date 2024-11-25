@@ -31,6 +31,7 @@ void display_menu() {
     cout << "0. Exit" << endl;
     cout << "\nEnter choice: ";
 }
+
 /**
  * @brief Ensures that the "reports" directory exists.
  *        If it does not exist, the directory is created.
@@ -42,6 +43,7 @@ void ensure_reports_directory() {
     }
     // If directory already exists, -1 is returned but that's okay
 }
+
 /**
  * @brief Retrieves the file path to the project file containing account data.
  *
@@ -51,6 +53,7 @@ string getProjectPath() {
     string userProfile = getenv("USERPROFILE"); // Gets C:\Users\User
     return userProfile + "\\CLionProjects\\ADS-MID\\accountswithspace.txt";
 }
+
 /**
  * @brief The main entry point of the program. Provides a menu-based interface
  *        for managing the chart of accounts.
@@ -116,8 +119,15 @@ int main() {
             }
             case 2: {
                 int accountNumber;
-                cout << "Enter account number for transaction: ";
-                cin >> accountNumber;
+                while (true) {
+                    cout << "Enter account number: ";
+                    if (cin >> accountNumber && accountNumber > 0) {
+                        break;
+                    }
+                    cout << "Invalid account number. Please enter a positive number.\n";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
 
                 // Create a transaction using the overloaded >> operator
                 Transaction newTransaction;
@@ -249,8 +259,15 @@ int main() {
             }
             case 6: {
                 int accountNumber;
-                cout << "Enter account number to search: ";
-                cin >> accountNumber;
+                while (true) {
+                    cout << "Enter account number: ";
+                    if (cin >> accountNumber && accountNumber > 0) {
+                        break;
+                    }
+                    cout << "Invalid account number. Please enter a positive number.\n";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
 
                 NodePtr accountNode = tree.findAccount(accountNumber);
                 if (accountNode) {
@@ -266,7 +283,7 @@ int main() {
             }
 
             case 0:
-                cout << "Exiting program...\n";
+                cout << "Exiting program thank you for choosing us:)...\n";
                 break;
             default:
                 cout << "Invalid choice, try again.\n";

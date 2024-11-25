@@ -13,6 +13,7 @@
 #include "Transaction.h"
 #include <iomanip>
 #include <ctime>
+#include <limits>
 
 using namespace std;
 
@@ -146,19 +147,11 @@ void Transaction::setAmount(double amt) {
 /**
  * @brief Sets the type of transaction (debit or credit).
  *
- * If the provided type is invalid, it defaults to 'D' (Debit).
  *
  * @param type The type of transaction ('D' for Debit, 'C' for Credit)
  */
 void Transaction::setDebitCredit(char type) {
-    char newType = toupper(type);
-
-    if (newType == 'D' || newType == 'C') {
-        debitCredit = newType;
-    } else {
-        cerr << "Invalid type. Defaulting to 'D' (Debit)." << endl;
-        debitCredit = 'D';
-    }
+    debitCredit = toupper(type);
 }
 
 /**
@@ -260,18 +253,48 @@ istream &operator>>(istream &is, Transaction &transaction) {
     transaction.setTransactionID("");
 
 
-    cout << "Enter Amount: ";
-    is >> amount;
-    cout << "Enter Type (D/C): ";
-    is >> debitCredit;
-    cout << "Enter Description: ";
-    is.ignore();
-    getline(is, description);
+    bool validAmount = false;
+    while (!validAmount) {
+        cout << "Enter Amount: ";
+        if (is >> amount) {
+            if (amount >= 0) {
+                validAmount = true;
+                transaction.setAmount(amount);
+            } else {
+                cout << "Amount must be non-negative. Please try again.\n";
+            }
+        } else {
+            cout << "Invalid amount. Please enter a valid number.\n";
+            is.clear(); // Clear error flags
+            is.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear input buffer
+        }
+    }
 
-    transaction.setAmount(amount);
-    transaction.setDebitCredit(debitCredit);
-    transaction.setDate("");//autoset current date
+    bool validType = false;
+    while (!validType) {
+        cout << "Enter Type (D/C): ";
+        if (is >> debitCredit) {
+            debitCredit = toupper(debitCredit);
+            if (debitCredit == 'D' || debitCredit == 'C') {
+                validType = true;
+                transaction.setDebitCredit(debitCredit);
+            } else {
+                cout << "Invalid type. Please enter 'D' for Debit or 'C' for Credit.\n";
+            }
+        } else {
+            cout << "Invalid input. Please enter 'D' or 'C'.\n";
+            is.clear();
+            is.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    cout << "Enter Description: ";
+    is.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear any remaining newline
+    getline(is, description);
     transaction.setDescription(description);
+
+    // Set current date
+    transaction.setDate("");
 
     return is;
 }
