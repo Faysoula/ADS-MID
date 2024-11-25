@@ -1,3 +1,12 @@
+/**
+* @file main.cpp
+ * @brief Main driver program for the Chart of Accounts Management System.
+ *
+ * This program provides a menu-based interface for managing a chart of accounts,
+ * including adding accounts, applying transactions, generating reports, and more.
+ * The accounts are managed using a ForestTree data structure and are saved to or
+ * loaded from files for persistence.
+ */
 #include <iostream>
 #include <string>
 #include <filesystem>
@@ -7,7 +16,9 @@
 
 using namespace std;
 
-
+/**
+ * @brief Displays the main menu options to the user.
+ */
 void display_menu() {
     cout << "\nChart of Accounts Management System" << endl;
     cout << "=======================================" << endl;
@@ -20,7 +31,10 @@ void display_menu() {
     cout << "0. Exit" << endl;
     cout << "\nEnter choice: ";
 }
-
+/**
+ * @brief Ensures that the "reports" directory exists.
+ *        If it does not exist, the directory is created.
+ */
 void ensure_reports_directory() {
     const string reportDir = "reports";
     if (_mkdir(reportDir.c_str()) == 0) {
@@ -28,12 +42,21 @@ void ensure_reports_directory() {
     }
     // If directory already exists, -1 is returned but that's okay
 }
-
+/**
+ * @brief Retrieves the file path to the project file containing account data.
+ *
+ * @return The file path as a string.
+ */
 string getProjectPath() {
     string userProfile = getenv("USERPROFILE"); // Gets C:\Users\User
     return userProfile + "\\CLionProjects\\ADS-MID\\accountswithspace.txt";
 }
-
+/**
+ * @brief The main entry point of the program. Provides a menu-based interface
+ *        for managing the chart of accounts.
+ *
+ * @return Exit status of the program.
+ */
 int main() {
     ForestTree tree;
 

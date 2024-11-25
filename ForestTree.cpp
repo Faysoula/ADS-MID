@@ -2,7 +2,15 @@
 // Created by asus on 11/19/2024.
 //
 //Roa Al Assaad 11/22/2024 addTransaction and removeTransaction
-
+/**
+ * @file ForestTree.cpp
+ * @brief Implements the `ForestTree` class, which manages a hierarchical chart of accounts.
+ *
+ * This file provides the implementation for the `ForestTree` class, including methods for managing accounts,
+ * adding transactions, generating reports, and saving/loading data from files. The `ForestTree` is built
+ * using a tree structure where each account is represented as a node, enabling hierarchical organization
+ * of accounts and subaccounts.
+ */
 #include "ForestTree.h"
 #include <fstream>
 #include <sstream>
